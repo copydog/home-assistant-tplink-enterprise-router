@@ -30,7 +30,7 @@ class TPLinkEnterpriseRouterClient:
         await self.request({"method": "do", "system": {"logout": None}})
 
     async def reboot(self):
-        pass
+        await self.request({"method": "do", "system": {"reboot": None}})
 
     async def set_ap_light(self, status: str):
         await self.request({"method": "set", "apmng_set": {"ap_led_global_switch": {"led_switch": status}}})
