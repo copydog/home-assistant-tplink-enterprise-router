@@ -1,0 +1,29 @@
+{
+  "title": "TP-Link Enterprise Router",
+  "config": {
+    "step": {
+      "user": {
+        "description": "",
+        "data": {
+          "instance_name": "Instance Name",
+          "host": "Host",
+          "username": "Username",
+          "password": "Password"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "description": "",
+        "data": {
+          "instance_name": "Instance Name",
+          "host": "Host",
+          "username": "Username",
+          "password": "Password"
+        }
+      }
+    }
+  }
+}

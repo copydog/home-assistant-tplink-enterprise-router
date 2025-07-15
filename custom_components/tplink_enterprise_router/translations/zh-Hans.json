@@ -1,0 +1,29 @@
+{
+  "title": "TP-Link 企业级路由器",
+  "config": {
+    "step": {
+      "user": {
+        "description": "",
+        "data": {
+          "instance_name": "实例名称",
+          "host": "登陆地址",
+          "username": "账号",
+          "password": "密码"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "description": "",
+        "data": {
+          "instance_name": "实例名称",
+          "host": "登陆地址",
+          "username": "账号",
+          "password": "密码"
+        }
+      }
+    }
+  }
+}
