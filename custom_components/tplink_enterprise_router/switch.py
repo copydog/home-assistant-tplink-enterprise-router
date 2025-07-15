@@ -67,9 +67,9 @@ class TPLinkEnterpriseRouterSwitchEntity(
     ) -> None:
         super().__init__(coordinator)
 
-        # self._attr_device_info = coordinator.device_info
         self.entity_id = f"switch.{DOMAIN}_{description.key}_{coordinator.unique_id}"
         self._attr_unique_id = f"{DOMAIN}_{description.key}_{coordinator.unique_id}"
+        self._attr_device_info = coordinator.device_info
         self.entity_description = description
 
     @property

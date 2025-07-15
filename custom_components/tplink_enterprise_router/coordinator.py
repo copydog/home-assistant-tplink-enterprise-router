@@ -3,9 +3,14 @@ from datetime import timedelta, datetime
 import logging
 
 from collections.abc import Callable
+from urllib.parse import unquote
+
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
+from .const import DOMAIN
 
 from custom_components.tplink_enterprise_router.client import TPLinkEnterpriseRouterClient
 
@@ -20,15 +25,27 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
             entry: ConfigEntry,
     ) -> None:
         update_interval = entry.data.get('update_interval') or 30
-        host = entry.data.get('host')
+        self.host = entry.data.get('host')
         username = entry.data.get('username')
         password = entry.data.get('password')
         self.status = {
             "running": True,
             "available": True,
+            "device_info": {}
         }
+
+        self.device_info = DeviceInfo(
+            configuration_url=self.host,
+            # connections={(CONNECTION_NETWORK_MAC, "55:55:44:33:11:22")},
+            # identifiers={(DOMAIN, "123")},
+            manufacturer="TP-Link",
+            model="Loading...",
+            name="Loading...",
+            sw_version="Loading...",
+            hw_version="Loading...",
+        )
         self.unique_id = entry.entry_id
-        self.client = TPLinkEnterpriseRouterClient(hass, host, username, password)
+        self.client = TPLinkEnterpriseRouterClient(hass, self.host, username, password)
         self.scan_stopped_at: datetime | None = None
         super().__init__(
             hass,
@@ -79,3 +96,14 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
             **data,
             "host_count": data['wireless_host_count'] + data['wired_host_count'],
         })
+
+        self.device_info = DeviceInfo(
+            configuration_url=self.host,
+            connections={(CONNECTION_NETWORK_MAC, data['device_info']['mac'])},
+            identifiers={(DOMAIN, data['device_info']['mac'])},
+            manufacturer="TP-Link",
+            model=data['device_info']['model'],
+            name="TP-Link",
+            sw_version=unquote(data['device_info']['firmware_version']),
+            hw_version=data['device_info']['hardware_version'],
+        )

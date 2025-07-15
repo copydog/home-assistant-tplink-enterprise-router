@@ -98,6 +98,7 @@ class TPLinkEnterpriseRouterClient:
             "memory_used": json['system']['mem_usage']['mem'],
             "wan_state": wan_state,
             "hosts": clean_hosts,
+            "device_info": json['system']['device_info'],
         }
 
     async def request(self, payload, url=None):
