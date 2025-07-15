@@ -8,7 +8,8 @@
           "instance_name": "实例名称",
           "host": "登陆地址",
           "username": "账号",
-          "password": "密码"
+          "password": "密码",
+          "update_interval": "更新间隔"
         }
       }
     }
@@ -21,7 +22,8 @@
           "instance_name": "实例名称",
           "host": "登陆地址",
           "username": "账号",
-          "password": "密码"
+          "password": "密码",
+          "update_interval": "更新间隔"
         }
       }
     }

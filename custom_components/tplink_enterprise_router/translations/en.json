@@ -8,7 +8,8 @@
           "instance_name": "Instance Name",
           "host": "Host",
           "username": "Username",
-          "password": "Password"
+          "password": "Password",
+          "update_interval": "Update Interval"
         }
       }
     }
@@ -21,7 +22,8 @@
           "instance_name": "Instance Name",
           "host": "Host",
           "username": "Username",
-          "password": "Password"
+          "password": "Password",
+          "update_interval": "Update Interval"
         }
       }
     }
