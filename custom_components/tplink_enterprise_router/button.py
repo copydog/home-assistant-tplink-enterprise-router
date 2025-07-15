@@ -20,9 +20,6 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN
 from .coordinator import TPLinkEnterpriseRouterCoordinator
 
-_LOGGER = logging.getLogger(__name__)
-
-
 @dataclass
 class TPLinkEnterpriseRouterButtonEntityDescriptionMixin:
     method: Callable[[TPLinkEnterpriseRouterCoordinator], Any]

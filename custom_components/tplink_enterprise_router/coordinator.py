@@ -33,18 +33,12 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
             "available": True,
             "device_info": {}
         }
+        self.device_info = None
 
-        self.device_info = DeviceInfo(
-            configuration_url=self.host,
-            manufacturer="TP-Link",
-            model="Loading...",
-            name="Loading...",
-            sw_version="Loading...",
-            hw_version="Loading...",
-        )
         self.unique_id = entry.entry_id
         self.client = TPLinkEnterpriseRouterClient(hass, self.host, username, password)
         self.scan_stopped_at: datetime | None = None
+
         super().__init__(
             hass,
             _LOGGER,
@@ -84,9 +78,6 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         if not self.status["running"]:
             return
-        await self.sync_data()
-
-    async def sync_data(self):
         await self.client.authenticate()
         data = await self.client.get_status()
         """ Get Host Count """
@@ -105,3 +96,4 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
             sw_version=unquote(data['device_info']['firmware_version']),
             hw_version=data['device_info']['hardware_version'],
         )
+

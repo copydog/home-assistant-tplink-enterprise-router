@@ -1,7 +1,6 @@
 """The integration."""
 import logging
 
-from homeassistant.helpers import entity_registry as er
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
@@ -18,7 +17,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     """ Register coordinator """
     _coordinator = TPLinkEnterpriseRouterCoordinator(hass, entry)
-    await _coordinator.sync_data()
+    await _coordinator.async_refresh()
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = _coordinator
 
     """ Forward setup """
