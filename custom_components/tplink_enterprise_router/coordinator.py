@@ -45,16 +45,6 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=update_interval),
         )
 
-    @staticmethod
-    def request(router: TPLinkEnterpriseRouterClient, callback: Callable):
-        router.authenticate()
-        data = callback()
-
-        return data
-
-    async def async_trigger_button_press(self):
-        pass
-
     async def reboot(self) -> None:
         await self.client.authenticate()
         await self.client.reboot()
