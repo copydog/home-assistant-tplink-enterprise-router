@@ -2,7 +2,7 @@ import logging
 from urllib.parse import unquote
 from aiohttp import ClientTimeout
 
-from homeassistant.exceptions import HomeAssistantError, IntegrationError
+from homeassistant.exceptions import HomeAssistantError, IntegrationError, ConfigEntryAuthFailed
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 _LOGGER = logging.getLogger(__name__)
@@ -17,50 +17,53 @@ class TPLinkEnterpriseRouterClient:
         self._session = async_get_clientsession(hass)
 
     async def authenticate(self) -> None:
-        json = await self.request(
-            {"method": "do", "login": {"username": self.username, "password": self.password}},
-            self.host
-        )
+        try:
+            json = await self.request(
+                self.host,
+                {"method": "do", "login": {"username": self.username, "password": self.password}},
+            )
 
-        if json['error_code'] != 0:
-            raise HomeAssistantError(f"Invalid Credential")
+            if json['error_code'] != 0:
+                raise ConfigEntryAuthFailed(f"Failed to authenticate, check host, username and password")
 
-        self.token = json['stok']
+            self.token = json['stok']
+        except Exception as e:
+            raise ConfigEntryAuthFailed("Failed to authenticate, check host, username and password")
 
     async def logout(self):
-        await self.request({"method": "do", "system": {"logout": None}})
+        await self.request(f"{self.host}/stok={self.token}/ds", {"method": "do", "system": {"logout": None}})
 
     async def reboot(self):
-        await self.request({"method": "do", "system": {"reboot": None}})
+        await self.request(f"{self.host}/stok={self.token}/ds", {"method": "do", "system": {"reboot": None}})
 
     async def set_ap_light(self, status: str):
-        await self.request({"method": "set", "apmng_set": {"ap_led_global_switch": {"led_switch": status}}})
-
-    async def get_wan(self):
-        json = await self.request({"method": "get", "port": {"table": "port_status", "filter": [{"port_type": "WAN"}]}})
+        await self.request(f"{self.host}/stok={self.token}/ds",
+                           {"method": "set", "apmng_set": {"ap_led_global_switch": {"led_switch": status}}})
 
     async def get_status(self):
-        json = await self.request({
-            "method": "get",
-            "host_management": {
-                "name": "host_count_info",
-                "table": "host_info"
-            },
-            "system": {
-                "name": [
-                    "cpu_usage",
-                    "mem_usage",
-                    "device_info"
-                ]
-            },
-            "online_check": {
-                "table": "state",
-                "name": "state"
-            },
-            "apmng_status": {
-                "name": "apmng_status"
-            },
-        })
+        json = await self.request(
+            f"{self.host}/stok={self.token}/ds",
+            {
+                "method": "get",
+                "host_management": {
+                    "name": "host_count_info",
+                    "table": "host_info"
+                },
+                "system": {
+                    "name": [
+                        "cpu_usage",
+                        "mem_usage",
+                        "device_info"
+                    ]
+                },
+                "online_check": {
+                    "table": "state",
+                    "name": "state"
+                },
+                "apmng_status": {
+                    "name": "apmng_status"
+                },
+            })
 
         host_count_info = json['host_management']['host_count_info']
         cpu_usage = json['system']['cpu_usage']
@@ -104,8 +107,7 @@ class TPLinkEnterpriseRouterClient:
             "device_info": json['system']['device_info'],
         }
 
-    async def request(self, payload, url=None):
-        url = url or f"{self.host}/stok={self.token}/ds"
+    async def request(self, url, payload):
         headers = {
             "Content-Type": "application/json",  # 声明JSON数据
         }
