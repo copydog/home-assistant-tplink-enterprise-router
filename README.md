@@ -7,6 +7,8 @@ Home Assistant Integration for TP-Link Enterprise Router
 
 See [Supported routers](#supports)
 
+<img src="https://raw.githubusercontent.com/copydog/home-assistant-tplink-enterprise-router/refs/heads/main/docs/media/screenshot.png">
+
 ## <a id="supports">Supported routers</a>
 - TL-R479GPE-AC (I use this)
 - TL-R470GP
