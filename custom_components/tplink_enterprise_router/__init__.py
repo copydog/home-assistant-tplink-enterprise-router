@@ -3,6 +3,7 @@ import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
 
 from .const import (DOMAIN, PLATFORMS)
 from .coordinator import TPLinkEnterpriseRouterCoordinator
@@ -17,7 +18,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     """ Register coordinator """
     _coordinator = TPLinkEnterpriseRouterCoordinator(hass, entry)
-    await _coordinator.async_refresh()
+
+    try:
+        await _coordinator.async_refresh()
+    except Exception as e:
+        raise ConfigEntryNotReady(f"HTTP Request Failed: {e}")
+
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = _coordinator
 
     """ Forward setup """

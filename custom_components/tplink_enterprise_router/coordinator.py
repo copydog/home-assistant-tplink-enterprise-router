@@ -30,7 +30,6 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
         password = entry.data.get('password')
         self.status = {
             "running": True,
-            "available": True,
             "device_info": {}
         }
         self.device_info = None
@@ -78,22 +77,28 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         if not self.status["running"]:
             return
-        await self.client.authenticate()
-        data = await self.client.get_status()
-        """ Get Host Count """
-        self.set_status({
-            **data,
-            "host_count": data['wireless_host_count'] + data['wired_host_count'],
-        })
 
-        self.device_info = DeviceInfo(
-            configuration_url=self.host,
-            connections={(CONNECTION_NETWORK_MAC, data['device_info']['mac'])},
-            identifiers={(DOMAIN, data['device_info']['mac'])},
-            manufacturer="TP-Link",
-            model=data['device_info']['model'],
-            name="TP-Link",
-            sw_version=unquote(data['device_info']['firmware_version']),
-            hw_version=data['device_info']['hardware_version'],
-        )
+        try:
+            await self.client.authenticate()
+            data = await self.client.get_status()
+            """ Get Host Count """
+            self.set_status({
+                **data,
+                "host_count": data['wireless_host_count'] + data['wired_host_count'],
+            })
 
+            self.last_update_success = True
+
+            self.device_info = DeviceInfo(
+                configuration_url=self.host,
+                connections={(CONNECTION_NETWORK_MAC, data['device_info']['mac'])},
+                identifiers={(DOMAIN, data['device_info']['mac'])},
+                manufacturer="TP-Link",
+                model=data['device_info']['model'],
+                name="TP-Link",
+                sw_version=unquote(data['device_info']['firmware_version']),
+                hw_version=data['device_info']['hardware_version'],
+            )
+        except Exception as e:
+            self.last_exception = False
+            raise e

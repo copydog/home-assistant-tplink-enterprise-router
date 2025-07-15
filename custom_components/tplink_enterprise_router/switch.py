@@ -77,12 +77,6 @@ class TPLinkEnterpriseRouterSwitchEntity(
         """Return true if switch is on."""
         return self.coordinator.status[self.entity_description.property]
 
-    @property
-    def available(self) -> bool:
-        """Return True if entity is available."""
-        return True
-        # return getattr(self.coordinator.status, "available")
-
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the entity on."""
         await self.entity_description.method(self.coordinator, True)

@@ -1,7 +1,8 @@
 import logging
 from urllib.parse import unquote
+from aiohttp import ClientTimeout
 
-from homeassistant.exceptions import HomeAssistantError
+from homeassistant.exceptions import HomeAssistantError, IntegrationError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 _LOGGER = logging.getLogger(__name__)
@@ -108,14 +109,16 @@ class TPLinkEnterpriseRouterClient:
         headers = {
             "Content-Type": "application/json",  # 声明JSON数据
         }
+        timeout = ClientTimeout(total=5)
 
         try:
             async with self._session.post(
                     url,
                     headers=headers,
                     json=payload,
+                    timeout=timeout,
             ) as response:
                 return await response.json()
+
         except Exception as e:
-            _LOGGER.error(f"REQUEST FAILED: {e}")
-            raise ValueError(f"REQUEST FAILED: {e}")
+            raise IntegrationError(f"Fail to request host: {self.host} payload: {payload} error: {e}")

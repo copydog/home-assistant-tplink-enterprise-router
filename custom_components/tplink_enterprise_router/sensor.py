@@ -131,11 +131,6 @@ class TPLinkEnterpriseRouterSensor(
         self._attr_extra_state_attributes = self.entity_description.attrs(self.coordinator.status)
         self.async_write_ha_state()
 
-    @property
-    def available(self) -> bool:
-        """Return True if entity is available."""
-        return self.entity_description.value(self.coordinator.status) is not None
-
     async def async_added_to_hass(self):
         """ Refresh when entity is added to hass. """
         await super().async_added_to_hass()
