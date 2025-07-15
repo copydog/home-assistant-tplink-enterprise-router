@@ -36,8 +36,6 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
 
         self.device_info = DeviceInfo(
             configuration_url=self.host,
-            # connections={(CONNECTION_NETWORK_MAC, "55:55:44:33:11:22")},
-            # identifiers={(DOMAIN, "123")},
             manufacturer="TP-Link",
             model="Loading...",
             name="Loading...",
