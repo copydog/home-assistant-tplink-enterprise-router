@@ -85,10 +85,12 @@ class TPLinkEnterpriseRouterClient:
             connect_date = item.get("connect_date")
             connect_time = item.get("connect_time")
             ssid = item.get("ssid")
+            rssi = item.get("rssi")
             item["ap_name"] = unquote(ap_name) if ap_name is not None else ""
             item["connect_date"] = unquote(connect_date) if connect_date is not None else ""
             item["connect_time"] = unquote(connect_time) if connect_time is not None else ""
             item["ssid"] = unquote(ssid) if ssid is not None else ""
+            item["rssi"] = unquote(rssi) if rssi is not None else ""
 
         return {
             "wired_host_count": host_count_info['wired_host_count'],
