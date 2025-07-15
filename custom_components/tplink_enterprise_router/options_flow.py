@@ -6,6 +6,7 @@ from .const import (
     DEFAULT_HOST,
 )
 
+
 class TPLinkEnterpriseRouterOptionsFlowHandler(config_entries.OptionsFlow):
     def __init__(self, config_entry):
         self._config_entry = config_entry
@@ -24,8 +25,11 @@ class TPLinkEnterpriseRouterOptionsFlowHandler(config_entries.OptionsFlow):
         if user_input is not None:
             self.hass.config_entries.async_update_entry(
                 self._config_entry,
-                data=user_input
+                data=user_input,
+                options=user_input,
             )
+
+            await self.hass.config_entries.async_reload(self._config_entry.entry_id)
 
             return self.async_create_entry(
                 title=user_input["instance_name"], data=user_input
