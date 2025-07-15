@@ -1,0 +1,12 @@
+{
+  "domain": "tplink_enterprise_router",
+  "name": "TP-Link Enterprise Router",
+  "version": "1.0.0",
+  "documentation": "https://github.com/copydog/home-assistant-tplink-enterprise-router",
+  "issue_tracker": "https://github.com/copydog/home-assistant-tplink-enterprise-router/issues",
+  "requirements": ["requests>=2.25.1"],
+  "dependencies": [],
+  "iot_class": "local_polling",
+  "codeowners": ["@copydog"],
+  "config_flow": true
+}

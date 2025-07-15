@@ -1,0 +1,142 @@
+from dataclasses import dataclass
+from collections.abc import Callable
+from typing import Any
+from homeassistant.components.sensor import (
+    SensorStateClass,
+    SensorEntity,
+    SensorEntityDescription,
+)
+from homeassistant.const import PERCENTAGE
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant, callback
+from .const import DOMAIN
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from .coordinator import TPLinkEnterpriseRouterCoordinator
+
+
+@dataclass
+class TPLinkEnterpriseRouterSensorRequiredKeysMixin:
+    value: Callable[[Any], Any]
+    attrs: Callable[[Any], Any]
+
+
+@dataclass
+class TPLinkEnterpriseRouterSensorEntityDescription(
+    SensorEntityDescription, TPLinkEnterpriseRouterSensorRequiredKeysMixin
+):
+    pass
+
+
+SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
+    TPLinkEnterpriseRouterSensorEntityDescription(
+        key="wireless_clients_total",
+        name="Total Wireless Clients",
+        icon="mdi:account-multiple",
+        state_class=SensorStateClass.TOTAL,
+        value=lambda status: status['wireless_host_count'],
+        attrs=lambda status: {}
+    ),
+    TPLinkEnterpriseRouterSensorEntityDescription(
+        key="wired_clients_total",
+        name="Total Wired Clients",
+        icon="mdi:account-multiple",
+        state_class=SensorStateClass.TOTAL,
+        value=lambda status: status['wired_host_count'],
+        attrs=lambda status: {}
+    ),
+    TPLinkEnterpriseRouterSensorEntityDescription(
+        key="clients_total",
+        name="Total Clients",
+        icon="mdi:account-multiple",
+        state_class=SensorStateClass.TOTAL,
+        value=lambda status: status['host_count'],
+        attrs=lambda status: {}
+    ),
+    TPLinkEnterpriseRouterSensorEntityDescription(
+        key="cpu_used",
+        name="CPU Used",
+        icon="mdi:cpu-64-bit",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=PERCENTAGE,
+        suggested_display_precision=1,
+        value=lambda status: status['cpu_used'],
+        attrs=lambda status: {}
+    ),
+    TPLinkEnterpriseRouterSensorEntityDescription(
+        key="memory_used",
+        name="Memory Used",
+        icon="mdi:memory",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=PERCENTAGE,
+        suggested_display_precision=1,
+        value=lambda status: status['memory_used'],
+        attrs=lambda status: {}
+    ),
+    TPLinkEnterpriseRouterSensorEntityDescription(
+        key="wan_state",
+        name="WAN State",
+        icon="mdi:wan",
+        value=lambda status: status['wan_state'],
+        attrs=lambda status: {}
+    ),
+    TPLinkEnterpriseRouterSensorEntityDescription(
+        key="data",
+        name="Data",
+        icon="mdi:database",
+        value=lambda status: len(status['hosts']),
+        attrs=lambda status: {
+            "host": status['hosts'],
+            "ssid": status['ssid_host_count']
+        }
+    ),
+)
+
+
+async def async_setup_entry(
+        hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+) -> None:
+    coordinator = hass.data[DOMAIN][entry.entry_id]
+
+    sensors = []
+
+    for description in SENSOR_TYPES:
+        sensors.append(TPLinkEnterpriseRouterSensor(coordinator, description))
+
+    async_add_entities(sensors, False)
+
+
+class TPLinkEnterpriseRouterSensor(
+    CoordinatorEntity[TPLinkEnterpriseRouterCoordinator], SensorEntity
+):
+    _attr_has_entity_name = True
+    entity_description: TPLinkEnterpriseRouterSensorEntityDescription
+
+    def __init__(
+            self,
+            coordinator: TPLinkEnterpriseRouterCoordinator,
+            description: TPLinkEnterpriseRouterSensorEntityDescription,
+    ) -> None:
+        super().__init__(coordinator)
+
+        # self._attr_device_info = coordinator.device_info
+        self.entity_id = f"sensor.{DOMAIN}_{description.key}_{coordinator.unique_id}"
+        self._attr_unique_id = f"{DOMAIN}_{description.key}_{coordinator.unique_id}"
+        self.entity_description = description
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        self._attr_native_value = self.entity_description.value(self.coordinator.status)
+        self._attr_extra_state_attributes = self.entity_description.attrs(self.coordinator.status)
+        self.async_write_ha_state()
+
+    @property
+    def available(self) -> bool:
+        """Return True if entity is available."""
+        return self.entity_description.value(self.coordinator.status) is not None
+
+    async def async_added_to_hass(self):
+        """ Refresh when entity is added to hass. """
+        await super().async_added_to_hass()
+        await self.coordinator.async_request_refresh()
