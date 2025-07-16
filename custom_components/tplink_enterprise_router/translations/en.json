@@ -27,5 +27,30 @@
         }
       }
     }
+  },
+  "entity": {
+    "sensor": {
+      "wireless_clients_total": {
+        "name": "Total Wireless Clients"
+      },
+      "wired_clients_total": {
+        "name": "Total Wired Clients"
+      },
+      "clients_total": {
+        "name": "Total Clients"
+      },
+      "cpu_used": {
+        "name": "CPU Used"
+      },
+      "memory_used": {
+        "name": "Memory Used"
+      },
+      "wan_state": {
+        "name": "WAN State"
+      },
+      "ap_connected_devices": {
+        "name": "AP Connected Devices"
+      }
+    }
   }
 }
