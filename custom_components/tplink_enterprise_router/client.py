@@ -73,7 +73,6 @@ class TPLinkEnterpriseRouterClient:
         """ Calculate Wan Status """
         state_dict = json.get("online_check", {}).get("state", {})
         wan_state = None
-        ssid_host_count = [{"ssid": key, "count": value} for key, value in host_count_info['ssid_host_count'].items()]
 
         for state_key in state_dict:
             state_info = state_dict[state_key]
@@ -96,9 +95,35 @@ class TPLinkEnterpriseRouterClient:
             item["ssid"] = unquote(ssid) if ssid is not None else ""
             item["rssi"] = unquote(rssi) if rssi is not None else ""
 
+        if 'ssid_host_count' in host_count_info and host_count_info['ssid_host_count']:
+            ssid_host_count = [{"ssid": key, "count": value} for key, value in host_count_info['ssid_host_count'].items()]
+        else:
+            ssid_counts = {}
+            for host_info in clean_hosts:
+                if host_info.get("type") == "wireless" and host_info.get("ssid"):
+                    ssid = host_info.get("ssid")
+                    if ssid in ssid_counts:
+                        ssid_counts[ssid] += 1
+                    else:
+                        ssid_counts[ssid] = 1
+            ssid_host_count = [{"ssid": ssid, "count": count} for ssid, count in ssid_counts.items()]
+        
+        if ('wired_host_count' in host_count_info and 
+            'wireless_host_count' in host_count_info):
+            wired_host_count = host_count_info['wired_host_count']
+            wireless_host_count = host_count_info['wireless_host_count']
+        else:
+            wired_host_count = 0
+            wireless_host_count = 0
+            for host_info in clean_hosts:
+                if host_info.get("type") == "wired":
+                    wired_host_count += 1
+                elif host_info.get("type") == "wireless":
+                    wireless_host_count += 1
+
         return {
-            "wired_host_count": host_count_info['wired_host_count'],
-            "wireless_host_count": host_count_info['wireless_host_count'],
+            "wired_host_count": wired_host_count,
+            "wireless_host_count": wireless_host_count,
             "ssid_host_count": ssid_host_count,
             "cpu_used": cpu_used,
             "memory_used": json['system']['mem_usage']['mem'],
