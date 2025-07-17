@@ -5,15 +5,19 @@
 Home Assistant Integration for TP-Link Enterprise Router
 
 > [!WARNING]
-> 你可以通过关闭轮询状态开关来关闭轮询，这样就会每次轮询的时候把你踢下线
+> 你可以通过关闭 轮询状态开关 来停止轮询，这样就不会每次轮询的时候把你踢下线
 
 查看 [支持的路由](#supports)
 
 <img src="https://raw.githubusercontent.com/copydog/home-assistant-tplink-enterprise-router/refs/heads/main/docs/media/screenshot.png">
 
 ## 开发路线
-- [ ] 所有事件
+- [ ] 所有事件相关
+- [ ] 一键重启AP
+- [ ] 一键自动射频调优
+- [ ] SSID 启用开关、隐藏开关
 - [ ] 系统日志丢包检测与修复
+- [ ] TP-LINK交换机: TL-SG2024MP 8.0 (新开项目)
 
 ## 组件
 ### 事件
@@ -46,7 +50,7 @@ Home Assistant Integration for TP-Link Enterprise Router
 - [x] SSID 设备统计
 - [x] AP 连接设备统计 
 
-## <a id="supports">Supported routers</a>
+## <a id="supports">支持的路由器</a>
 - TL-R479GPE-AC (I use this)
 - TL-R470GP
 - TL-R6812TP-AC (testing)
