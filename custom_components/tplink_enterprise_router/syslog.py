@@ -25,7 +25,7 @@ class EventMatcher:
         if self.translations is None:
             self.translations = await translation.async_get_translations(
                 self.hass,
-                "zh-Hans",
+                self.hass.config.language,
                 "component",
                 [DOMAIN],
             )
