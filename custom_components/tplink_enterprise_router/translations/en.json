@@ -9,7 +9,8 @@
           "host": "Host",
           "username": "Username",
           "password": "Password",
-          "update_interval": "Update Interval"
+          "update_interval": "Update Interval",
+          "enable_syslog_event": "Enable Syslog Event"
         }
       }
     }
@@ -23,8 +24,26 @@
           "host": "Host",
           "username": "Username",
           "password": "Password",
-          "update_interval": "Update Interval"
+          "update_interval": "Update Interval",
+          "enable_syslog_event": "Enable Syslog Event"
         }
+      },
+      "syslog_config": {
+        "description": "",
+        "data": {
+          "syslog_event": "Syslog Event",
+          "client_log_sensor": "Add Client Log Sensor",
+          "debug_log_sensor": "Add Debug Log Sensor"
+        }
+      }
+    }
+  },
+  "component": {
+    "tplink_enterprise_router": {
+      "event": {
+        "wireless_client_disconnected": "{client_mac} disconnected",
+        "wireless_client_connected": "{client_mac} connected to {ap_name} {ap_ssid} ({ap_frequency})",
+        "wireless_client_roamed": "{client_mac} roamed {from_ap_name} {from_ap_ssid}(from_ap_frequency) to {to_ap_name} {to_ap_ssid}(to_ap_frequency) "
       }
     }
   }

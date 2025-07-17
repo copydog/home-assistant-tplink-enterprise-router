@@ -11,11 +11,15 @@ See [Supported routers](#supports)
 
 ## Components
 ### Events
-This feature will be supported, BUT syslog receiver is a BETTER choice
+This feature uses udp system log 
 
-- [ ] tplink_router_device_joined: Fired when a new device appears in your network
-- [ ] tplink_router_device_offline: Fired when a device becomes offline
-- [ ] tplink_router_device_online: Fired when a device becomes online
+- [ ] [DEBUG MODE ONLY]tplink_enterprise_router_wireless_web_login: Fired when a client (including this integration) logged into web management
+- [x] tplink_enterprise_router_wireless_client_roamed: Fired when a client roamed to another access point (AP)
+- [x] tplink_enterprise_router_wireless_client_connected: Fired when a client connected
+- [x] tplink_enterprise_router_wireless_client_disconnected: Fired when a client disconnected
+- [ ] tplink_enterprise_router_dhcp_ip_assigned
+- [ ] tplink_enterprise_router_unstable_wireless_client_detected
+- [ ] tplink_enterprise_router_wireless_client_connected_ap_changed
 
 ### Switches / Buttons
 - [x] Reboot

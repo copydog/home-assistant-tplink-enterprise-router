@@ -24,19 +24,21 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
             hass: HomeAssistant,
             entry: ConfigEntry,
     ) -> None:
+
         update_interval = entry.data.get('update_interval') or 30
         self.host = entry.data.get('host')
         username = entry.data.get('username')
         password = entry.data.get('password')
         self.status = {
             "running": True,
-            "device_info": {}
         }
         self.device_info = None
 
         self.unique_id = entry.entry_id
         self.client = TPLinkEnterpriseRouterClient(hass, self.host, username, password)
         self.scan_stopped_at: datetime | None = None
+        self.client_log_sensor = None
+        self.debug_log_sensor = None
 
         super().__init__(
             hass,
@@ -44,6 +46,13 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
             name="TPLinkEnterpriseRouter",
             update_interval=timedelta(seconds=update_interval),
         )
+
+    @staticmethod
+    def request(router: TPLinkEnterpriseRouterClient, callback: Callable):
+        router.authenticate()
+        data = callback()
+
+        return data
 
     async def reboot(self) -> None:
         await self.client.authenticate()
@@ -70,7 +79,6 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
 
         await self.client.authenticate()
         data = await self.client.get_status()
-        """ Get Host Count """
         self.set_status({
             **data,
             "host_count": data['wireless_host_count'] + data['wired_host_count'],

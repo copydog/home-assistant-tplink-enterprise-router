@@ -8,5 +8,6 @@
   "dependencies": [],
   "iot_class": "local_polling",
   "codeowners": ["@copydog"],
+  "translations": ["en", "zh-Hans"],
   "config_flow": true
 }

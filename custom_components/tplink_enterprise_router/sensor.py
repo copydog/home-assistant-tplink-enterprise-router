@@ -1,17 +1,19 @@
-from dataclasses import dataclass
 from collections.abc import Callable
+from dataclasses import dataclass
 from typing import Any
+
 from homeassistant.components.sensor import (
     SensorStateClass,
     SensorEntity,
     SensorEntityDescription,
 )
-from homeassistant.const import PERCENTAGE
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import PERCENTAGE
 from homeassistant.core import HomeAssistant, callback
-from .const import DOMAIN
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+
+from .const import DOMAIN
 from .coordinator import TPLinkEnterpriseRouterCoordinator
 
 
@@ -130,8 +132,3 @@ class TPLinkEnterpriseRouterSensor(
         self._attr_native_value = self.entity_description.value(self.coordinator.status)
         self._attr_extra_state_attributes = self.entity_description.attrs(self.coordinator.status)
         self.async_write_ha_state()
-
-    async def async_added_to_hass(self):
-        """ Refresh when entity is added to hass. """
-        await super().async_added_to_hass()
-        await self.coordinator.async_request_refresh()

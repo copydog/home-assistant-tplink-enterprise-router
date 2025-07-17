@@ -9,7 +9,9 @@
           "host": "登陆地址",
           "username": "账号",
           "password": "密码",
-          "update_interval": "更新间隔"
+          "update_interval": "更新间隔",
+          "syslog_event": "Syslog事件",
+          "enable_syslog_event": "启用日志事件"
         }
       }
     }
@@ -23,8 +25,19 @@
           "host": "登陆地址",
           "username": "账号",
           "password": "密码",
-          "update_interval": "更新间隔"
+          "update_interval": "更新间隔",
+          "syslog_event": "Syslog事件",
+          "enable_syslog_event": "启用日志事件"
         }
+      }
+    }
+  },
+  "component": {
+    "tplink_enterprise_router": {
+      "event": {
+        "wireless_client_disconnected": "{client_mac} 断开连接",
+        "wireless_client_connected": "{client_mac} 成功连接 {ap_name} 的 {ap_ssid}({ap_frequency})",
+        "wireless_client_roamed": "{client_mac} 从 {from_ap_name} 的 {from_ap_ssid}(from_ap_frequency) 漫游到 {to_ap_name} 的 {to_ap_ssid}(to_ap_frequency) "
       }
     }
   }

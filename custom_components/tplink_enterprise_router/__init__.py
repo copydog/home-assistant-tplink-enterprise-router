@@ -7,6 +7,7 @@ from homeassistant.exceptions import IntegrationError
 
 from .const import (DOMAIN, PLATFORMS)
 from .coordinator import TPLinkEnterpriseRouterCoordinator
+from .syslog import SyslogHandler
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -25,6 +26,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await hass.async_create_task(
         hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     )
+
+    remove_listener = hass.bus.async_listen(
+        "syslog_receiver_message",
+        SyslogHandler(hass, entry).handle,
+    )
+
+    entry.async_on_unload(remove_listener)
 
     return True
 
