@@ -28,7 +28,7 @@ class TPLinkEnterpriseRouterClient:
 
             self.token = json['stok']
         except Exception as e:
-            raise ConfigEntryAuthFailed("Failed to authenticate, check host, username and password")
+            raise IntegrationError("Cannot connect router")
 
     async def logout(self):
         await self.request(f"{self.host}/stok={self.token}/ds", {"method": "do", "system": {"logout": None}})

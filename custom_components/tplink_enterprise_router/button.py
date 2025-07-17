@@ -20,6 +20,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN
 from .coordinator import TPLinkEnterpriseRouterCoordinator
 
+
 @dataclass
 class TPLinkEnterpriseRouterButtonEntityDescriptionMixin:
     method: Callable[[TPLinkEnterpriseRouterCoordinator], Any]
@@ -33,6 +34,13 @@ class TPLinkButtonEntityDescription(
 
 
 BUTTON_TYPES = (
+    TPLinkButtonEntityDescription(
+        key="refresh",
+        name="Refresh",
+        device_class=ButtonDeviceClass.UPDATE,
+        entity_category=EntityCategory.CONFIG,
+        method=lambda coordinator: coordinator.async_refresh(),
+    ),
     TPLinkButtonEntityDescription(
         key="reboot",
         name="Reboot",
@@ -69,6 +77,7 @@ async def async_setup_entry(
     for description in BUTTON_TYPES:
         buttons.append(TPLinkEnterpriseRouterButtonEntity(coordinator, description))
     async_add_entities(buttons, False)
+
 
 class TPLinkEnterpriseRouterButtonEntity(CoordinatorEntity[TPLinkEnterpriseRouterCoordinator], ButtonEntity):
     entity_description: TPLinkButtonEntityDescription

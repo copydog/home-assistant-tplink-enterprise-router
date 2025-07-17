@@ -30,7 +30,7 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
         username = entry.data.get('username')
         password = entry.data.get('password')
         self.status = {
-            "running": True,
+            "polling": True,
         }
         self.device_info = None
 
@@ -62,9 +62,9 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
         await self.client.authenticate()
         await self.client.set_ap_light(status)
 
-    async def set_running(self, value: bool) -> None:
+    async def set_polling(self, value: bool) -> None:
         self.set_status({
-            "running": value
+            "polling": value
         })
 
     def set_status(self, data) -> None:
@@ -74,7 +74,7 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
         }
 
     async def _async_update_data(self):
-        if not self.status["running"]:
+        if not self.status["polling"]:
             return
 
         await self.client.authenticate()
@@ -83,8 +83,6 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
             **data,
             "host_count": data['wireless_host_count'] + data['wired_host_count'],
         })
-
-        self.last_update_success = True
 
         self.device_info = DeviceInfo(
             configuration_url=self.host,

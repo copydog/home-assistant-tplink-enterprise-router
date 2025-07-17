@@ -117,6 +117,7 @@ class WirelessClientChangedEventMatcher(EventMatcher):
                 "readable_message": self.build_readable_message(data)
             }
         self.hass.bus.fire(f"{DOMAIN}_wireless_client_changed", final_data)
+        self.hass.bus.fire(f"{DOMAIN}_wireless_client_updated", final_data)
 
 class WirelessClientRoamedEventMatcher(WirelessClientChangedEventMatcher):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):

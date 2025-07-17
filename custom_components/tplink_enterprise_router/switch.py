@@ -31,11 +31,11 @@ class TPLinkEnterpriseRouterSwitchEntityDescription(
 
 SWITCH_TYPES = (
     TPLinkEnterpriseRouterSwitchEntityDescription(
-        key="running",
-        name="Running",
-        property="running",
+        key="polling",
+        name="Polling",
+        property="polling",
         entity_category=EntityCategory.CONFIG,
-        method=lambda coordinator, value: coordinator.set_running(value),
+        method=lambda coordinator, value: coordinator.set_polling(value),
     ),
 )
 
