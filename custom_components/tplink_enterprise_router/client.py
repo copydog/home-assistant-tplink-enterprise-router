@@ -65,7 +65,6 @@ class TPLinkEnterpriseRouterClient:
                 },
             })
 
-        host_count_info = json['host_management']['host_count_info']
         cpu_usage = json['system']['cpu_usage']
         cpu_used = int(
             (int(cpu_usage['core1']) + int(cpu_usage['core2']) + int(cpu_usage['core3']) + int(cpu_usage['core4'])) / 4)
@@ -96,6 +95,7 @@ class TPLinkEnterpriseRouterClient:
             item["rssi"] = unquote(rssi) if rssi is not None else ""
 
         """ Calculate SSID count """
+        host_count_info = json['host_management']['host_count_info']
         if 'ssid_host_count' in host_count_info and host_count_info['ssid_host_count']:
             ssid_host_count = [{"ssid": key, "count": value} for key, value in
                                host_count_info['ssid_host_count'].items()]
