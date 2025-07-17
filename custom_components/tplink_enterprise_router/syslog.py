@@ -72,7 +72,7 @@ class WebLoginEventMatcher(EventMatcher):
     def _process(self, data) -> None:
         pass
 
-class WirelessClientUpdatedEventMatcher(EventMatcher):
+class WirelessClientChangedEventMatcher(EventMatcher):
     def _process(self, data) -> None:
         super()._process(data)
         final_data = None
@@ -116,9 +116,9 @@ class WirelessClientUpdatedEventMatcher(EventMatcher):
                 "type": self.type,
                 "readable_message": self.build_readable_message(data)
             }
-        self.hass.bus.fire(f"{DOMAIN}_wireless_client_updated", final_data)
+        self.hass.bus.fire(f"{DOMAIN}_wireless_client_changed", final_data)
 
-class WirelessClientRoamedEventMatcher(WirelessClientUpdatedEventMatcher):
+class WirelessClientRoamedEventMatcher(WirelessClientChangedEventMatcher):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
         super().__init__(
             hass,
@@ -128,7 +128,7 @@ class WirelessClientRoamedEventMatcher(WirelessClientUpdatedEventMatcher):
             "wireless_client_roamed"
         )
 
-class WirelessClientConnectedEventMatcher(WirelessClientUpdatedEventMatcher):
+class WirelessClientConnectedEventMatcher(WirelessClientChangedEventMatcher):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
         super().__init__(
             hass,
@@ -138,7 +138,7 @@ class WirelessClientConnectedEventMatcher(WirelessClientUpdatedEventMatcher):
             "wireless_client_connected"
         )
 
-class WirelessClientDisconnectedEventMatcher(WirelessClientUpdatedEventMatcher):
+class WirelessClientDisconnectedEventMatcher(WirelessClientChangedEventMatcher):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
         super().__init__(
             hass,
