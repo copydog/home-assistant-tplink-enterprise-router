@@ -66,6 +66,15 @@
       },
       "wan_2_state": {
         "name": "WAN2 状态"
+      },
+      "ap_count": {
+        "name": "AP 总数"
+      },
+      "ap_online_count": {
+        "name": "AP 在线总数"
+      },
+      "ap_list": {
+        "name": "AP 列表"
       }
     },
     "button": {

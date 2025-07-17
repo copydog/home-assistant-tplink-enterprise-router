@@ -37,8 +37,16 @@ class TPLinkEnterpriseRouterClient:
         await self.request(f"{self.host}/stok={self.token}/ds", {"method": "do", "system": {"reboot": None}})
 
     async def set_ap_light(self, status: str):
-        await self.request(f"{self.host}/stok={self.token}/ds",
-                           {"method": "set", "apmng_set": {"ap_led_global_switch": {"led_switch": status}}})
+        await self.request(
+            f"{self.host}/stok={self.token}/ds",
+            {"method": "set", "apmng_set": {"ap_led_global_switch": {"led_switch": status}}}
+        )
+
+    async def reboot_ap_list(self, id_list: list):
+        await self.request(
+            f"{self.host}/stok={self.token}/ds",
+            {"method": "do", "apmng_status": {"ap_reboot": {"entry_id": id_list}}}
+        )
 
     async def get_status(self):
         json = await self.request(
@@ -135,6 +143,59 @@ class TPLinkEnterpriseRouterClient:
             "wan_count": wan_count,
             "hosts": clean_hosts,
             "device_info": system.get("device_info"),
+        }
+
+    async def get_ap_status(self):
+        json = await self.request(
+            f"{self.host}/stok={self.token}/ds",
+            {
+                "method": "get",
+                "apmng_set": {
+                    "table": "ap_list",
+                    "filter": [
+                        {
+                            "group_id": "0",
+                            "ap_role": "re_all"
+                        },
+                        {
+                            "group_id": "0"
+                        }
+                    ],
+                    "para": {
+                        "start": 0,
+                        "end": 499
+                    }
+                }
+            }
+        )
+
+        if json and json.get("error_code") != 0:
+            return {
+                "ap_count": 0,
+                "ap_list": [],
+                "ap_online_count": 0,
+                "ap_online_list": []
+            }
+
+        ap_list = json.get("apmng_set", {}).get("ap_list", [])
+        ap_count = len(ap_list)
+        ap_online_count = sum(
+            1 for ap in ap_list
+            for inner_dict in ap.values()
+            if inner_dict.get("status") == "2"
+        )
+        ap_online_list = [
+            inner_dict
+            for item in ap_list
+            for inner_dict in item.values()
+            if inner_dict.get("status") == "2"
+        ]
+
+        return {
+            "ap_count": ap_count,
+            "ap_list": ap_list,
+            "ap_online_count": ap_online_count,
+            "ap_online_list": ap_online_list
         }
 
     async def request(self, url, payload):

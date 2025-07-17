@@ -36,7 +36,7 @@ SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
         key="wireless_clients_total",
         name="Total Wireless Clients",
         translation_key="wireless_clients_total",
-        icon="mdi:cable-data",
+        icon="mdi:access-point-network",
         state_class=SensorStateClass.TOTAL,
         value=lambda status: status['wireless_host_count'],
         attrs=lambda status: {
@@ -73,7 +73,7 @@ SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
         key="wired_clients_total",
         name="Total Wired Clients",
         translation_key="wired_clients_total",
-        icon="mdi:access-point-network",
+        icon="mdi:cable-data",
         state_class=SensorStateClass.TOTAL,
         value=lambda status: status['wired_host_count'],
         attrs=lambda status: {
@@ -88,7 +88,8 @@ SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
         state_class=SensorStateClass.TOTAL,
         value=lambda status: status['host_count'],
         attrs=lambda status: {
-            "hosts": status['hosts']
+            "hosts": status['hosts'],
+            "ssid_host_count": status['ssid_host_count'],
         }
     ),
     TPLinkEnterpriseRouterSensorEntityDescription(
@@ -120,6 +121,26 @@ SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
         icon="mdi:wan",
         value=lambda status: status['wan_count'],
         attrs=lambda status: {}
+    ),
+    TPLinkEnterpriseRouterSensorEntityDescription(
+        key="ap_count",
+        name="AP Count",
+        translation_key="ap_count",
+        icon="mdi:access-point",
+        value=lambda status: status['ap_count'],
+        attrs=lambda status: {
+            "list": status['ap_list'],
+        }
+    ),
+    TPLinkEnterpriseRouterSensorEntityDescription(
+        key="ap_online_count",
+        name="AP Online Count",
+        translation_key="ap_online_count",
+        icon="mdi:access-point-check",
+        value=lambda status: status['ap_online_count'],
+        attrs=lambda status: {
+            "list": status['ap_online_list'],
+        }
     ),
 )
 

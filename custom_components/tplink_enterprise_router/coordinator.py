@@ -78,11 +78,16 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
             return
 
         await self.client.authenticate()
+
         data = await self.client.get_status()
+        ap_data = await self.client.get_ap_status()
+
         self.set_status({
             **data,
+            **ap_data,
             "host_count": data['wireless_host_count'] + data['wired_host_count'],
         })
+
 
         if data['device_info'].get('model'):
             self.router_name = f"TP-Link {data['device_info']['model']} ({self.host})"
