@@ -12,10 +12,7 @@ Home Assistant Integration for TP-Link Enterprise Router
 <img src="https://raw.githubusercontent.com/copydog/home-assistant-tplink-enterprise-router/refs/heads/main/docs/media/screenshot.png">
 
 ## 开发路线
-- [ ] 所有事件相关
-- [ ] 一键重启AP
-- [ ] 一键自动射频调优
-- [ ] SSID 启用开关、隐藏开关
+- [ ] 所有未完成组件
 - [ ] 系统日志丢包检测与修复
 - [ ] TP-LINK交换机: TL-SG2024MP 8.0 (新开项目)
 
@@ -32,14 +29,17 @@ Home Assistant Integration for TP-Link Enterprise Router
 - [ ] tplink_enterprise_router_dhcp_ip_assigned: 当路由器给客户端分配IP时发送
 - [ ] tplink_enterprise_router_unstable_wireless_client_detected: 当客户端短时间内频繁连接和断线时发送
 
-### Switches / Buttons
+### 开关 / 按钮
 - [x] 重启
 - [x] 刷新
 - [x] 轮询状态
 - [x] 打开所有AP指示灯
 - [x] 关闭所有AP指示灯
+- [ ] 重启所有AP
+- [ ] 一键射频调优
+- [ ] SSID 启用开关、隐藏开关
 
-### Sensors
+### 传感器
 - [x] 客户端总数
 - [x] 有线客户端总数
 - [x] 无线客户端总数
@@ -51,7 +51,7 @@ Home Assistant Integration for TP-Link Enterprise Router
 - [x] AP 连接设备统计 
 
 ## <a id="supports">支持的路由器</a>
-- TL-R479GPE-AC (I use this)
-- TL-R470GP
-- TL-R6812TP-AC (testing)
+- TL-R479GPE-AC (我用这个)
+- TL-R470GP-AC
+- TL-R6812TP-AC (测试中)
 - 其他类似设备
