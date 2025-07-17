@@ -37,6 +37,7 @@ BUTTON_TYPES = (
     TPLinkButtonEntityDescription(
         key="refresh",
         name="Refresh",
+        translation_key="refresh",
         device_class=ButtonDeviceClass.UPDATE,
         entity_category=EntityCategory.CONFIG,
         method=lambda coordinator: coordinator.async_refresh(),
@@ -44,6 +45,7 @@ BUTTON_TYPES = (
     TPLinkButtonEntityDescription(
         key="reboot",
         name="Reboot",
+        translation_key="reboot",
         device_class=ButtonDeviceClass.RESTART,
         entity_category=EntityCategory.CONFIG,
         method=lambda coordinator: coordinator.reboot(),
@@ -51,6 +53,7 @@ BUTTON_TYPES = (
     TPLinkButtonEntityDescription(
         key="turn_on_ap_light",
         name="Turn On AP Light",
+        translation_key="turn_on_ap_light",
         device_class=ButtonDeviceClass.UPDATE,
         entity_category=EntityCategory.CONFIG,
         method=lambda coordinator: coordinator.set_ap_light("on"),
@@ -58,6 +61,7 @@ BUTTON_TYPES = (
     TPLinkButtonEntityDescription(
         key="turn_off_ap_light",
         name="Turn Off AP Light",
+        translation_key="turn_off_ap_light",
         device_class=ButtonDeviceClass.UPDATE,
         entity_category=EntityCategory.CONFIG,
         method=lambda coordinator: coordinator.set_ap_light("off"),
@@ -93,6 +97,7 @@ class TPLinkEnterpriseRouterButtonEntity(CoordinatorEntity[TPLinkEnterpriseRoute
         self._attr_unique_id = f"{DOMAIN}_{description.key}_{coordinator.unique_id}"
         self._attr_device_info = coordinator.device_info
         self.entity_description = description
+        self._attr_has_entity_name = True
 
     async def async_press(self) -> None:
         await self.entity_description.method(self.coordinator)

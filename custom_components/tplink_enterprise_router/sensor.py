@@ -171,6 +171,7 @@ class TPLinkEnterpriseRouterSensor(
         self._attr_unique_id = f"{DOMAIN}_{description.key}_{coordinator.unique_id}"
         self._attr_device_info = coordinator.device_info
         self.entity_description = description
+        self._attr_has_entity_name = True
 
     @callback
     def _handle_coordinator_update(self) -> None:

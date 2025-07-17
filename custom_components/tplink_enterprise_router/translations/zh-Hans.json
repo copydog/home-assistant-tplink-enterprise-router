@@ -64,6 +64,25 @@
       "ap_connected_devices": {
         "name": "AP 已连接设备"
       }
+    },
+    "button": {
+      "refresh": {
+        "name": "刷新"
+      },
+      "reboot": {
+        "name": "重启"
+      },
+      "turn_on_ap_light": {
+        "name": "打开所有AP指示灯"
+      },
+      "turn_off_ap_light": {
+        "name": "关闭所有AP指示灯"
+      }
+    },
+    "switch": {
+      "polling": {
+        "name": "轮询状态"
+      }
     }
   }
 }

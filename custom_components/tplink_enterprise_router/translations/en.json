@@ -70,6 +70,25 @@
       "ap_connected_devices": {
         "name": "AP Connected Devices"
       }
+    },
+    "button": {
+      "refresh": {
+        "name": "Refresh"
+      },
+      "reboot": {
+        "name": "Reboot"
+      },
+      "turn_on_ap_light": {
+        "name": "Turn On AP Light"
+      },
+      "turn_off_ap_light": {
+        "name": "Turn Off AP Light"
+      }
+    },
+    "switch": {
+      "polling": {
+        "name": "Polling"
+      }
     }
   }
 }

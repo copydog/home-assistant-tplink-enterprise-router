@@ -32,6 +32,7 @@ class TPLinkEnterpriseRouterSwitchEntityDescription(
 SWITCH_TYPES = (
     TPLinkEnterpriseRouterSwitchEntityDescription(
         key="polling",
+        translation_key="polling",
         name="Polling",
         property="polling",
         entity_category=EntityCategory.CONFIG,
@@ -71,6 +72,7 @@ class TPLinkEnterpriseRouterSwitchEntity(
         self._attr_unique_id = f"{DOMAIN}_{description.key}_{coordinator.unique_id}"
         self._attr_device_info = coordinator.device_info
         self.entity_description = description
+        self._attr_has_entity_name = True
 
     @property
     def is_on(self) -> bool:
