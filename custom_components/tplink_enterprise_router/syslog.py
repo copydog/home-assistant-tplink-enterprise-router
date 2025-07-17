@@ -72,17 +72,63 @@ class WebLoginEventMatcher(EventMatcher):
     def _process(self, data) -> None:
         pass
 
-class WirelessClientRoamedEventMatcher(EventMatcher):
+class WirelessClientUpdatedEventMatcher(EventMatcher):
+    def _process(self, data) -> None:
+        super()._process(data)
+        final_data = None
+        if self.type == "wireless_client_roamed":
+            final_data = {
+                **data,
+                "previous_status": "connected",
+                "current_status": "connected",
+                "type": self.type,
+                "readable_message": self.build_readable_message(data)
+            }
+        elif self.type == "wireless_client_connected":
+            final_data = {
+                "device": data['device'],
+                "timestamp": data['timestamp'],
+                "client_mac": data['client_mac'],
+                "previous_ap_name": "",
+                "previous_ap_ssid": "",
+                "previous_ap_frequency": "",
+                "previous_status": "disconnected",
+                "current_ap_name": data['ap_name'],
+                "current_ap_ssid": data['ap_ssid'],
+                "current_ap_frequency": data['ap_frequency'],
+                "current_status": "connected",
+                "type": self.type,
+                "readable_message": self.build_readable_message(data)
+            }
+        elif self.type == "wireless_client_disconnected":
+            final_data = {
+                "device": data['device'],
+                "timestamp": data['timestamp'],
+                "client_mac": data['client_mac'],
+                "previous_ap_name": "",
+                "previous_ap_ssid": "",
+                "previous_ap_frequency": "",
+                "previous_status": "connected",
+                "current_ap_name": "",
+                "current_ap_ssid": "",
+                "current_ap_frequency": "",
+                "current_status": "disconnected",
+                "type": self.type,
+                "readable_message": self.build_readable_message(data)
+            }
+        self.hass.bus.fire(f"{DOMAIN}_wireless_client_updated", final_data)
+
+class WirelessClientRoamedEventMatcher(WirelessClientUpdatedEventMatcher):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
         super().__init__(
             hass,
             entry,
             [7],
-            r"\w{3}\s\d{1,2}\s[\d:]{6,8}\s(?P<device>.+)\swstation:\s(?P<timestamp>.+)\s<\d>\s:\s{1,2}STA\(MAC\s(?P<client_mac>[\w-]+)\)从AP\s(?P<from_ap_name>.+)的无线服务\s(?P<from_ap_ssid>.+)\((?P<from_ap_frequency>2\.4G|5G)\)\s成功漫游到AP\s(?P<to_ap_name>.+)的无线服务\s(?P<to_ap_ssid>.+)\((?P<to_ap_frequency>2\.4G|5G)\)",
+            r"\w{3}\s\d{1,2}\s[\d:]{6,8}\s(?P<device>.+)\swstation:\s(?P<timestamp>.+)\s<\d>\s:\s{1,2}STA\(MAC\s(?P<client_mac>[\w-]+)\)从AP\s(?P<previous_ap_name>.+)的无线服务\s(?P<previous_ap_ssid>.+)\((?P<previous_ap_frequency>2\.4G|5G)\)\s成功漫游到AP\s(?P<current_ap_name>.+)的无线服务\s(?P<current_ap_ssid>.+)\((?P<current_ap_frequency>2\.4G|5G)\)",
             "wireless_client_roamed"
         )
 
-class WirelessClientConnectedEventMatcher(EventMatcher):
+class WirelessClientConnectedEventMatcher(WirelessClientUpdatedEventMatcher):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
         super().__init__(
             hass,
@@ -92,7 +138,7 @@ class WirelessClientConnectedEventMatcher(EventMatcher):
             "wireless_client_connected"
         )
 
-class WirelessClientDisconnectedEventMatcher(EventMatcher):
+class WirelessClientDisconnectedEventMatcher(WirelessClientUpdatedEventMatcher):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
         super().__init__(
             hass,
@@ -103,7 +149,6 @@ class WirelessClientDisconnectedEventMatcher(EventMatcher):
         )
 
 class SyslogHandler:
-
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
         self.matchers = [
             WebLoginEventMatcher(hass, entry),

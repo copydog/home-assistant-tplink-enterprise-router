@@ -17,9 +17,9 @@ This feature uses udp system log
 - [x] tplink_enterprise_router_wireless_client_roamed: Fired when a client roamed to another access point (AP)
 - [x] tplink_enterprise_router_wireless_client_connected: Fired when a client connected
 - [x] tplink_enterprise_router_wireless_client_disconnected: Fired when a client disconnected
-- [ ] tplink_enterprise_router_dhcp_ip_assigned
-- [ ] tplink_enterprise_router_unstable_wireless_client_detected
-- [ ] tplink_enterprise_router_wireless_client_connected_ap_changed
+- [ ] tplink_enterprise_router_wireless_client_updated: Fire when a client connected, disconnected or roamed
+- [ ] tplink_enterprise_router_dhcp_ip_assigned: Fired when router assigned ip to a client
+- [ ] tplink_enterprise_router_unstable_wireless_client_detected: Fire when a client connects and disconnects frequently in a short time
 
 ### Switches / Buttons
 - [x] Reboot
