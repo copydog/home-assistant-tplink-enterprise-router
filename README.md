@@ -1,46 +1,53 @@
 # home-assistant-tplink-enterprise-router
 
+[English](./README_en.md)
+
 Home Assistant Integration for TP-Link Enterprise Router
 
 > [!WARNING]
-> Please temporarily disable the integration before accessing the router admin page. TP-Link admin page only allows one user at a time. This integration will log you out of the admin page every time it scans for updates (every 30s by default).
+> 你可以通过关闭轮询状态开关来关闭轮询，这样就会每次轮询的时候把你踢下线
 
-See [Supported routers](#supports)
+查看 [支持的路由](#supports)
 
 <img src="https://raw.githubusercontent.com/copydog/home-assistant-tplink-enterprise-router/refs/heads/main/docs/media/screenshot.png">
 
-## Components
-### Events
-This feature uses udp system log 
+## 开发路线
+- [ ] 所有事件
+- [ ] 系统日志丢包检测与修复
 
-- [ ] [DEBUG MODE ONLY]tplink_enterprise_router_wireless_web_login: Fired when a client (including this integration) logged into web management
-- [x] tplink_enterprise_router_wireless_client_roamed: Fired when a client roamed to another access point (AP)
-- [x] tplink_enterprise_router_wireless_client_connected: Fired when a client connected
-- [x] tplink_enterprise_router_wireless_client_disconnected: Fired when a client disconnected
-- [x] tplink_enterprise_router_wireless_client_changed: Fire when a client connected, disconnected or roamed from syslog
-- [x] tplink_enterprise_router_wireless_client_updated: Fire when a client connected, disconnected or roamed from syslog and poll
-- [ ] tplink_enterprise_router_dhcp_ip_assigned: Fired when router assigned ip to a client
-- [ ] tplink_enterprise_router_unstable_wireless_client_detected: Fire when a client connects and disconnects frequently in a short time
+## 组件
+### 事件
+这个功能用了 homeassistant-syslog-receiver, 但是要改一些代码，后面我会给作者提交PR
+
+- [ ] [仅测试模式]tplink_enterprise_router_wireless_web_login: 每次登陆后台管理页面的时候发送
+- [x] tplink_enterprise_router_wireless_client_roamed: 客户端漫游到其他AP设备时发送
+- [x] tplink_enterprise_router_wireless_client_connected: 客户端连接到AP时发送
+- [x] tplink_enterprise_router_wireless_client_disconnected: 客户端断开连接时发送
+- [x] tplink_enterprise_router_wireless_client_changed: 当客户端，断开、连接、漫游、频段切换时发送，仅检测系统日志
+- [x] tplink_enterprise_router_wireless_client_updated: 当客户端，断开、连接、漫游、频段切换时发送，与changed不同的是轮询的数据也会发送
+- [ ] tplink_enterprise_router_dhcp_ip_assigned: 当路由器给客户端分配IP时发送
+- [ ] tplink_enterprise_router_unstable_wireless_client_detected: 当客户端短时间内频繁连接和断线时发送
 
 ### Switches / Buttons
-- [x] Reboot
-- [x] Refresh
-- [x] Polling
-- [x] Turn on ap light
-- [x] Turn off ap light
+- [x] 重启
+- [x] 刷新
+- [x] 轮询状态
+- [x] 打开所有AP指示灯
+- [x] 关闭所有AP指示灯
 
 ### Sensors
-- [x] Total amount of clients
-- [x] Total amount of wired clients
-- [x] Total amount of host wireless clients
-- [x] Cpu used
-- [x] Memory used
-- [x] Wan state
-- [x] Network hosts (attribute of data entity)
-- [x] Total amount of each ssid (attribute od data entity)
+- [x] 客户端总数
+- [x] 有线客户端总数
+- [x] 无线客户端总数
+- [x] CPU 使用率
+- [x] 内存使用率
+- [x] WAN 总数
+- [x] WAN 状态
+- [x] SSID 设备统计
+- [x] AP 连接设备统计 
 
 ## <a id="supports">Supported routers</a>
 - TL-R479GPE-AC (I use this)
 - TL-R470GP
-- TL-R6812TP-AC (Coming soon)
-- other similar series
+- TL-R6812TP-AC (testing)
+- 其他类似设备
