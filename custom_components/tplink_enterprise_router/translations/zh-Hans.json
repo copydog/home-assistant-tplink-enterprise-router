@@ -66,9 +66,6 @@
       },
       "wan_2_state": {
         "name": "WAN2 状态"
-      },
-      "ap_connected_devices": {
-        "name": "AP 已连接设备"
       }
     },
     "button": {

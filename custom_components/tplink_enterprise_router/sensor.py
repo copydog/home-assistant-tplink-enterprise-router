@@ -36,22 +36,49 @@ SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
         key="wireless_clients_total",
         name="Total Wireless Clients",
         translation_key="wireless_clients_total",
-        icon="mdi:account-multiple",
+        icon="mdi:cable-data",
         state_class=SensorStateClass.TOTAL,
         value=lambda status: status['wireless_host_count'],
-        attrs=lambda status: {}
+        attrs=lambda status: {
+            "hosts": [host for host in status['hosts'] if host.get('type') == 'wireless' and host.get('ip')],
+            "ap_connected_hosts": {
+                ap_name: [
+                    {
+                        "name": (lambda h:
+                                 h.get('name', h.get('mac', 'Unknown'))
+                                 if not h.get('hostname') or unquote(h.get('hostname')) == '---'
+                                 else unquote(h.get('hostname'))
+                                 )(host),
+                        "mac": host.get('mac', ''),
+                        "ip": host.get('ip', ''),
+                        "ssid": host.get('ssid', ''),
+                        "rssi": host.get('rssi', ''),
+                        "ap_name": host.get('ap_name', ''),
+                        "connect_date": host.get('connect_date', ''),
+                        "connect_time": host.get('connect_time', ''),
+                        "connection_type": host.get('type', '')
+                    }
+                    for host in status['hosts']
+                    if host.get('ap_name') == ap_name and host.get('type') == 'wireless' and host.get('ip')
+                ]
+                for ap_name in set(
+                    host.get('ap_name', '')
+                    for host in status['hosts']
+                    if host.get('ap_name') and host.get('type') == 'wireless' and host.get('ip')
+                )
+            }
+        }
     ),
     TPLinkEnterpriseRouterSensorEntityDescription(
         key="wired_clients_total",
         name="Total Wired Clients",
         translation_key="wired_clients_total",
-        icon="mdi:account-multiple",
+        icon="mdi:access-point-network",
         state_class=SensorStateClass.TOTAL,
-        value=lambda status: len([
-            host for host in status['hosts']
-            if host.get('ap_name') and host.get('type') == 'wired' and host.get('ip')
-        ]),
-        attrs=lambda status: {}
+        value=lambda status: status['wired_host_count'],
+        attrs=lambda status: {
+            "hosts": [host for host in status['hosts'] if host.get('type') == 'wired' and host.get('ip')]
+        }
     ),
     TPLinkEnterpriseRouterSensorEntityDescription(
         key="clients_total",
@@ -60,7 +87,9 @@ SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
         icon="mdi:account-multiple",
         state_class=SensorStateClass.TOTAL,
         value=lambda status: status['host_count'],
-        attrs=lambda status: {}
+        attrs=lambda status: {
+            "hosts": status['hosts']
+        }
     ),
     TPLinkEnterpriseRouterSensorEntityDescription(
         key="cpu_used",
@@ -91,52 +120,6 @@ SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
         icon="mdi:wan",
         value=lambda status: status['wan_count'],
         attrs=lambda status: {}
-    ),
-    TPLinkEnterpriseRouterSensorEntityDescription(
-        key="ap_connected_devices",
-        translation_key="ap_connected_devices",
-        name="AP Connected Devices",
-        icon="mdi:access-point-network",
-        value=lambda status: len([
-            host for host in status['hosts']
-            if host.get('ap_name') and host.get('type') == 'wireless' and host.get('ip')
-        ]),
-        attrs=lambda status: {
-            ap_name: [
-                {
-                    "name": (lambda h:
-                             h.get('name', h.get('mac', 'Unknown'))
-                             if not h.get('hostname') or unquote(h.get('hostname')) == '---'
-                             else unquote(h.get('hostname'))
-                             )(host),
-                    "mac": host.get('mac', ''),
-                    "ip": host.get('ip', ''),
-                    "ssid": host.get('ssid', ''),
-                    "rssi": host.get('rssi', ''),
-                    "ap_name": host.get('ap_name', ''),
-                    "connect_date": host.get('connect_date', ''),
-                    "connect_time": host.get('connect_time', ''),
-                    "connection_type": host.get('type', '')
-                }
-                for host in status['hosts']
-                if host.get('ap_name') == ap_name and host.get('type') == 'wireless' and host.get('ip')
-            ]
-            for ap_name in set(
-                host.get('ap_name', '')
-                for host in status['hosts']
-                if host.get('ap_name') and host.get('type') == 'wireless' and host.get('ip')
-            )
-        }
-    ),
-    TPLinkEnterpriseRouterSensorEntityDescription(
-        key="data",
-        name="Data",
-        icon="mdi:database",
-        value=lambda status: len(status['hosts']),
-        attrs=lambda status: {
-            "host": status['hosts'],
-            "ssid": status['ssid_host_count']
-        }
     ),
 )
 
@@ -189,6 +172,7 @@ class TPLinkEnterpriseRouterSensor(
         self.entity_description = description
         self._attr_has_entity_name = True
         self._attr_native_value = self.entity_description.value(self.coordinator.status)
+        self._attr_extra_state_attributes = self.entity_description.attrs(self.coordinator.status)
 
     @callback
     def _handle_coordinator_update(self) -> None:
