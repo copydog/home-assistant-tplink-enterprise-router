@@ -65,9 +65,12 @@ class TPLinkEnterpriseRouterClient:
                 },
             })
 
-        cpu_usage = json['system']['cpu_usage']
-        cpu_used = int(
-            (int(cpu_usage['core1']) + int(cpu_usage['core2']) + int(cpu_usage['core3']) + int(cpu_usage['core4'])) / 4)
+        system = json.get("system", {})
+
+        """ Calculate cpu used """
+        cpu_usage = system.get('cpu_usage')
+        cpu_usages = [int(v) for v in cpu_usage.values()]
+        cpu_used = sum(cpu_usages) / len(cpu_usages) if cpu_usages else 0
 
         """ Calculate Wan count and status """
         _online_check = json.get("online_check", {})
@@ -127,11 +130,11 @@ class TPLinkEnterpriseRouterClient:
             "wireless_host_count": wireless_host_count,
             "ssid_host_count": ssid_host_count,
             "cpu_used": cpu_used,
-            "memory_used": json['system']['mem_usage']['mem'],
+            "memory_used": system.get("mem_usage", {}).get("mem"),
             "wan_states": wan_states,
             "wan_count": wan_count,
             "hosts": clean_hosts,
-            "device_info": json['system']['device_info'],
+            "device_info": system.get("device_info"),
         }
 
     async def request(self, url, payload):
