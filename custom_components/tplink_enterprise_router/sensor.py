@@ -172,6 +172,7 @@ class TPLinkEnterpriseRouterSensor(
         self._attr_device_info = coordinator.device_info
         self.entity_description = description
         self._attr_has_entity_name = True
+        self._attr_native_value = self.entity_description.value(self.coordinator.status)
 
     @callback
     def _handle_coordinator_update(self) -> None:
