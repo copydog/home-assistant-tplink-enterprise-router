@@ -1,6 +1,7 @@
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
+from urllib.parse import unquote
 
 from homeassistant.components.sensor import (
     SensorStateClass,
@@ -34,6 +35,7 @@ SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
     TPLinkEnterpriseRouterSensorEntityDescription(
         key="wireless_clients_total",
         name="Total Wireless Clients",
+        translation_key="wireless_clients_total",
         icon="mdi:account-multiple",
         state_class=SensorStateClass.TOTAL,
         value=lambda status: status['wireless_host_count'],
@@ -42,14 +44,19 @@ SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
     TPLinkEnterpriseRouterSensorEntityDescription(
         key="wired_clients_total",
         name="Total Wired Clients",
+        translation_key="wired_clients_total",
         icon="mdi:account-multiple",
         state_class=SensorStateClass.TOTAL,
-        value=lambda status: status['wired_host_count'],
+        value=lambda status: len([
+            host for host in status['hosts']
+            if host.get('ap_name') and host.get('type') == 'wireless' and host.get('ip')
+        ]),
         attrs=lambda status: {}
     ),
     TPLinkEnterpriseRouterSensorEntityDescription(
         key="clients_total",
         name="Total Clients",
+        translation_key="clients_total",
         icon="mdi:account-multiple",
         state_class=SensorStateClass.TOTAL,
         value=lambda status: status['host_count'],
@@ -58,6 +65,7 @@ SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
     TPLinkEnterpriseRouterSensorEntityDescription(
         key="cpu_used",
         name="CPU Used",
+        translation_key="cpu_used",
         icon="mdi:cpu-64-bit",
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=PERCENTAGE,
@@ -68,6 +76,7 @@ SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
     TPLinkEnterpriseRouterSensorEntityDescription(
         key="memory_used",
         name="Memory Used",
+        translation_key="memory_used",
         icon="mdi:memory",
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=PERCENTAGE,
@@ -78,9 +87,46 @@ SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
     TPLinkEnterpriseRouterSensorEntityDescription(
         key="wan_state",
         name="WAN State",
+        translation_key="wan_state",
         icon="mdi:wan",
         value=lambda status: status['wan_state'],
         attrs=lambda status: {}
+    ),
+    TPLinkEnterpriseRouterSensorEntityDescription(
+        key="ap_connected_devices",
+        translation_key="ap_connected_devices",
+        name="AP Connected Devices",
+        icon="mdi:access-point-network",
+        value=lambda status: len([
+            host for host in status['hosts']
+            if host.get('ap_name') and host.get('type') == 'wireless' and host.get('ip')
+        ]),
+        attrs=lambda status: {
+            ap_name: [
+                {
+                    "name": (lambda h:
+                             h.get('name', h.get('mac', 'Unknown'))
+                             if not h.get('hostname') or unquote(h.get('hostname')) == '---'
+                             else unquote(h.get('hostname'))
+                             )(host),
+                    "mac": host.get('mac', ''),
+                    "ip": host.get('ip', ''),
+                    "ssid": host.get('ssid', ''),
+                    "rssi": host.get('rssi', ''),
+                    "ap_name": host.get('ap_name', ''),
+                    "connect_date": host.get('connect_date', ''),
+                    "connect_time": host.get('connect_time', ''),
+                    "connection_type": host.get('type', '')
+                }
+                for host in status['hosts']
+                if host.get('ap_name') == ap_name and host.get('type') == 'wireless' and host.get('ip')
+            ]
+            for ap_name in set(
+                host.get('ap_name', '')
+                for host in status['hosts']
+                if host.get('ap_name') and host.get('type') == 'wireless' and host.get('ip')
+            )
+        }
     ),
     TPLinkEnterpriseRouterSensorEntityDescription(
         key="data",

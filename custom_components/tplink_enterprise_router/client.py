@@ -28,7 +28,7 @@ class TPLinkEnterpriseRouterClient:
 
             self.token = json['stok']
         except Exception as e:
-            raise IntegrationError("Cannot connect router")
+            raise IntegrationError(f"Cannot connect router {e}")
 
     async def logout(self):
         await self.request(f"{self.host}/stok={self.token}/ds", {"method": "do", "system": {"logout": None}})
@@ -41,6 +41,95 @@ class TPLinkEnterpriseRouterClient:
                            {"method": "set", "apmng_set": {"ap_led_global_switch": {"led_switch": status}}})
 
     async def get_status(self):
+        json = {
+            "apmng_status": {
+                "apmng_status": []
+            },
+            "error_code": 0,
+            "host_management": {
+                "host_info": [
+                    {
+                        "host_info_1": {
+                            ".name": "MACNAME",
+                            "host_save": "on",
+                            "time_obj": "any",
+                            "is_cur_host": False,
+                            "limit": "0",
+                            "hostname": "Name",
+                            "interface": "br-lan",
+                            "up_limit": "0",
+                            ".type": "host_info",
+                            "state": "offline",
+                            "mac": "MAC",
+                            "type": "wired",
+                            "down_limit": "0",
+                            ".anonymous": False,
+                            "time_mode": "any",
+                            "dev_state": "on"
+                        }
+                    },
+                    {
+                        "host_info_2": {
+                            ".name": "MACNAME",
+                            "host_save": "on",
+                            "time_obj": "any",
+                            "is_cur_host": False,
+                            "time_mode": "any",
+                            "hostname": "Name",
+                            "interface": "br-lan",
+                            "mac": "MAC",
+                            "type": "wireless",
+                            "ssid": "SSID",
+                            "state": "offline",
+                            "up_limit": "0",
+                            ".anonymous": False,
+                            "down_limit": "0",
+                            "limit": "0",
+                            ".type": "host_info",
+                            "dev_state": "on"
+                        }
+                    },
+                ],
+                "host_count_info": [],
+                "count": {
+                    "host_info": 28
+                }
+            },
+            "online_check": {
+                "state": {
+                    "state_1": {
+                        "if": "WAN1",
+                        "state": "up"
+                    },
+                    "state_2": {
+                        "if": "WAN2",
+                        "state": "up"
+                    }
+                },
+                "count": {
+                    "state": 2
+                }
+            },
+            "system": {
+                "mem_usage": {
+                    "mem": "24"
+                },
+                "device_info": {
+                    "mac": "MAC",
+                    "hardware_version": "3.0",
+                    "model": "TL-R6812TP-AC",
+                    "vendor_id": "0x00000001",
+                    "firmware_version": "2.0.2%20Build%20230731%20Rel.48066n"
+                },
+                "cpu_usage": {
+                    "core1": "35",
+                    "core2": "33",
+                    "core3": "30",
+                    "core4": "29"
+                }
+            }
+        }
+
         json = await self.request(
             f"{self.host}/stok={self.token}/ds",
             {
@@ -73,7 +162,6 @@ class TPLinkEnterpriseRouterClient:
         """ Calculate Wan Status """
         state_dict = json.get("online_check", {}).get("state", {})
         wan_state = None
-        ssid_host_count = [{"ssid": key, "count": value} for key, value in host_count_info['ssid_host_count'].items()]
 
         for state_key in state_dict:
             state_info = state_dict[state_key]
@@ -96,9 +184,37 @@ class TPLinkEnterpriseRouterClient:
             item["ssid"] = unquote(ssid) if ssid is not None else ""
             item["rssi"] = unquote(rssi) if rssi is not None else ""
 
+        """ Calculate SSID count """
+        if 'ssid_host_count' in host_count_info and host_count_info['ssid_host_count']:
+            ssid_host_count = [{"ssid": key, "count": value} for key, value in
+                               host_count_info['ssid_host_count'].items()]
+        else:
+            ssid_counts = {}
+            for host_info in clean_hosts:
+                if host_info.get("type") == "wireless" and host_info.get("ssid"):
+                    ssid = host_info.get("ssid")
+                    if ssid in ssid_counts:
+                        ssid_counts[ssid] += 1
+                    else:
+                        ssid_counts[ssid] = 1
+            ssid_host_count = [{"ssid": ssid, "count": count} for ssid, count in ssid_counts.items()]
+
+        if ('wired_host_count' in host_count_info and
+                'wireless_host_count' in host_count_info):
+            wired_host_count = host_count_info['wired_host_count']
+            wireless_host_count = host_count_info['wireless_host_count']
+        else:
+            wired_host_count = 0
+            wireless_host_count = 0
+            for host_info in clean_hosts:
+                if host_info.get("type") == "wired":
+                    wired_host_count += 1
+                elif host_info.get("type") == "wireless":
+                    wireless_host_count += 1
+
         return {
-            "wired_host_count": host_count_info['wired_host_count'],
-            "wireless_host_count": host_count_info['wireless_host_count'],
+            "wired_host_count": wired_host_count,
+            "wireless_host_count": wireless_host_count,
             "ssid_host_count": ssid_host_count,
             "cpu_used": cpu_used,
             "memory_used": json['system']['mem_usage']['mem'],

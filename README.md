@@ -42,4 +42,5 @@ This feature uses udp system log
 ## <a id="supports">Supported routers</a>
 - TL-R479GPE-AC (I use this)
 - TL-R470GP
+- TL-R6812TP-AC (Coming soon)
 - other similar series

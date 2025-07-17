@@ -84,13 +84,19 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
             "host_count": data['wireless_host_count'] + data['wired_host_count'],
         })
 
+        if data['device_info'].get('model'):
+            self.router_name = f"TP-Link {data['device_info']['model']} ({self.host})"
+
+        if data['device_info'].get('firmware_version'):
+            self.firmware_version = unquote(data['device_info']['firmware_version'])
+
         self.device_info = DeviceInfo(
             configuration_url=self.host,
             connections={(CONNECTION_NETWORK_MAC, data['device_info']['mac'])},
             identifiers={(DOMAIN, data['device_info']['mac'])},
-            manufacturer="TP-Link",
+            manufacturer="TP-LINK",
             model=data['device_info']['model'],
-            name="TP-Link",
-            sw_version=unquote(data['device_info']['firmware_version']),
+            name=self.router_name,
+            sw_version=self.firmware_version,
             hw_version=data['device_info']['hardware_version'],
         )

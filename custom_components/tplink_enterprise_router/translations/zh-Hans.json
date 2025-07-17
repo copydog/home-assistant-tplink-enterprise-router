@@ -40,5 +40,30 @@
         "wireless_client_roamed": "{client_mac} 从 {previous_ap_name} 的 {previous_ap_ssid}({previous_ap_frequency}) 漫游到 {current_ap_name} 的 {current_ap_ssid}({current_ap_frequency}) "
       }
     }
+  },
+  "entity": {
+    "sensor": {
+      "wireless_clients_total": {
+        "name": "无线客户端总数"
+      },
+      "wired_clients_total": {
+        "name": "有线客户端总数"
+      },
+      "clients_total": {
+        "name": "客户端总数"
+      },
+      "cpu_used": {
+        "name": "CPU 使用率"
+      },
+      "memory_used": {
+        "name": "内存使用率"
+      },
+      "wan_state": {
+        "name": "WAN 状态"
+      },
+      "ap_connected_devices": {
+        "name": "AP 已连接设备"
+      }
+    }
   }
 }
