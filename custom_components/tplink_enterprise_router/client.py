@@ -178,29 +178,47 @@ class TPLinkEnterpriseRouterClient:
             }
 
         ap_list = json.get("apmng_set", {}).get("ap_list", [])
-        ap_count = len(ap_list)
-        ap_online_count = sum(
-            1 for ap in ap_list
-            for inner_dict in ap.values()
-            if inner_dict.get("status") == "2"
-        )
-        ap_online_list = [
+        ap_list = [
             inner_dict
             for item in ap_list
             for inner_dict in item.values()
-            if inner_dict.get("status") == "2"
+        ]
+        ap_list = [
+            {key: item[key] for key in ['entry_name', 'entry_id', 'mac', 'status', 'led'] if key in item}
+            for item in ap_list
+        ]
+        ap_count = len(ap_list)
+        ap_online_count = sum(
+            1 for ap in ap_list
+            if ap.get("status") == "2"
+        )
+        ap_offline_count = sum(
+            1 for ap in ap_list
+            if ap.get("status") != "2"
+        )
+        ap_online_list = [
+            ap
+            for ap in ap_list
+            if ap.get("status") == "2"
+        ]
+        ap_offline_list = [
+            ap
+            for ap in ap_list
+            if ap.get("status") != "2"
         ]
 
         return {
             "ap_count": ap_count,
             "ap_list": ap_list,
             "ap_online_count": ap_online_count,
-            "ap_online_list": ap_online_list
+            "ap_online_list": ap_online_list,
+            "ap_offline_count": ap_offline_count,
+            "ap_offline_list": ap_offline_list,
         }
 
     async def request(self, url, payload):
         headers = {
-            "Content-Type": "application/json",  # 声明JSON数据
+            "Content-Type": "application/json",
         }
         timeout = ClientTimeout(total=5)
 

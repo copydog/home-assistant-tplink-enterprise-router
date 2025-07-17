@@ -73,6 +73,9 @@
       "ap_online_count": {
         "name": "AP 在线总数"
       },
+      "ap_offline_count": {
+        "name": "AP 离线总数"
+      },
       "ap_list": {
         "name": "AP 列表"
       }

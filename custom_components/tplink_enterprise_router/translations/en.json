@@ -76,6 +76,9 @@
       "ap_online_count": {
         "name": "AP Online Count"
       },
+      "ap_offline_count": {
+        "name": "AP Offline Count"
+      },
       "ap_list": {
         "name": "AP List"
       }

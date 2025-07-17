@@ -142,6 +142,16 @@ SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
             "list": status['ap_online_list'],
         }
     ),
+TPLinkEnterpriseRouterSensorEntityDescription(
+        key="ap_offline_count",
+        name="AP Offline Count",
+        translation_key="ap_offline_count",
+        icon="mdi:access-point-remove",
+        value=lambda status: status['ap_offline_count'],
+        attrs=lambda status: {
+            "list": status['ap_offline_list'],
+        }
+    ),
 )
 
 
