@@ -64,6 +64,9 @@
       "memory_used": {
         "name": "Memory Used"
       },
+      "wan_count": {
+        "name": "WAN Count"
+      },
       "wan_state": {
         "name": "WAN State"
       },

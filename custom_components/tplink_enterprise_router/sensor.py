@@ -85,11 +85,11 @@ SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
         attrs=lambda status: {}
     ),
     TPLinkEnterpriseRouterSensorEntityDescription(
-        key="wan_state",
-        name="WAN State",
-        translation_key="wan_state",
+        key="wan_count",
+        name="WAN Count",
+        translation_key="wan_count",
         icon="mdi:wan",
-        value=lambda status: status['wan_state'],
+        value=lambda status: status['wan_count'],
         attrs=lambda status: {}
     ),
     TPLinkEnterpriseRouterSensorEntityDescription(
@@ -144,12 +144,28 @@ SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
 async def async_setup_entry(
         hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
-    coordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator: TPLinkEnterpriseRouterCoordinator = hass.data[DOMAIN][entry.entry_id]
 
     sensors = []
 
     for description in SENSOR_TYPES:
         sensors.append(TPLinkEnterpriseRouterSensor(coordinator, description))
+
+    """ Create dynamic Wan sensors """
+    wan_states = coordinator.status.get("wan_states", [])
+    for wan_state in wan_states:
+        key = wan_state.get("key")
+        sensors.append(TPLinkEnterpriseRouterSensor(
+            coordinator,
+            TPLinkEnterpriseRouterSensorEntityDescription(
+                key=f"wan_state_{key}",
+                name=f"WAN{key} State",
+                translation_key=f"wan_{key}_state",
+                icon="mdi:wan",
+                value=lambda status: wan_state.get("state"),
+                attrs=lambda status: {}
+            ),
+        ))
 
     async_add_entities(sensors, False)
 

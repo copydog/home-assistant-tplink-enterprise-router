@@ -69,17 +69,16 @@ class TPLinkEnterpriseRouterClient:
         cpu_used = int(
             (int(cpu_usage['core1']) + int(cpu_usage['core2']) + int(cpu_usage['core3']) + int(cpu_usage['core4'])) / 4)
 
-        """ Calculate Wan Status """
-        state_dict = json.get("online_check", {}).get("state", {})
-        wan_state = None
+        """ Calculate Wan count and status """
+        _online_check = json.get("online_check", {})
+        state_dict = _online_check.get("state", {})
+        wan_states = [
+            {"key": k.replace("state_", ""), **v}
+            for k, v in state_dict.items()
+        ]
+        wan_count = _online_check.get("count", {}).get("state", None)
 
-        for state_key in state_dict:
-            state_info = state_dict[state_key]
-            if isinstance(state_info, dict) and state_info.get("if") == "WAN":
-                wan_state = state_info.get("state")
-                break
-
-        """ Calculate Hosts """
+        """ Calculate hosts """
         hosts = json['host_management']['host_info']
         clean_hosts = [list(item.values())[0] for item in hosts]
         for item in clean_hosts:
@@ -129,7 +128,8 @@ class TPLinkEnterpriseRouterClient:
             "ssid_host_count": ssid_host_count,
             "cpu_used": cpu_used,
             "memory_used": json['system']['mem_usage']['mem'],
-            "wan_state": wan_state,
+            "wan_states": wan_states,
+            "wan_count": wan_count,
             "hosts": clean_hosts,
             "device_info": json['system']['device_info'],
         }

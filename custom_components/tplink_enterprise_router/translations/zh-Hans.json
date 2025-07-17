@@ -58,8 +58,14 @@
       "memory_used": {
         "name": "内存使用率"
       },
-      "wan_state": {
-        "name": "WAN 状态"
+      "wan_count": {
+        "name": "WAN 总数"
+      },
+      "wan_1_state": {
+        "name": "WAN1 状态"
+      },
+      "wan_2_state": {
+        "name": "WAN2 状态"
       },
       "ap_connected_devices": {
         "name": "AP 已连接设备"
