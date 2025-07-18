@@ -165,6 +165,18 @@ class TPLinkEnterpriseRouterClient:
             {k: v for k, v in host.items() if k != "type"}
             for host in clean_hosts if host.get("type") == "wired"
         ]
+        ap_connected_hosts = {
+            ap_name: [
+                host
+                for host in hosts
+                if host.get('ap_name') == ap_name and host.get('type') == 'wireless' and host.get('ip')
+            ]
+            for ap_name in set(
+                host.get('ap_name', '')
+                for host in hosts
+                if host.get('ap_name') and host.get('type') == 'wireless' and host.get('ip')
+            )
+        }
 
         """ Calculate SSID count """
         host_count_info = json['host_management']['host_count_info']
@@ -209,6 +221,7 @@ class TPLinkEnterpriseRouterClient:
             "hosts": clean_hosts,
             "wireless_hosts": wireless_hosts,
             "wired_hosts": wired_hosts,
+            "ap_connected_hosts": ap_connected_hosts,
             "host_count": len(hosts),
             "wired_host_count": wired_host_count,
             "wireless_host_count": wireless_host_count,

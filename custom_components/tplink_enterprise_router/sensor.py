@@ -41,18 +41,7 @@ SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
         value=lambda status: status['wireless_host_count'],
         attrs=lambda status: {
             "hosts": status['wireless_hosts'],
-            "ap_connected_hosts": {
-                ap_name: [
-                    host
-                    for host in status['hosts']
-                    if host.get('ap_name') == ap_name and host.get('type') == 'wireless' and host.get('ip')
-                ]
-                for ap_name in set(
-                    host.get('ap_name', '')
-                    for host in status['hosts']
-                    if host.get('ap_name') and host.get('type') == 'wireless' and host.get('ip')
-                )
-            }
+            "ap_connected_hosts": status['ap_connected_hosts'],
         }
     ),
     TPLinkEnterpriseRouterSensorEntityDescription(
