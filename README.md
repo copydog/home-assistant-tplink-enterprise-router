@@ -12,7 +12,6 @@ Home Assistant Integration for TP-Link Enterprise Router
 <img src="https://raw.githubusercontent.com/copydog/home-assistant-tplink-enterprise-router/refs/heads/main/docs/media/screenshot.png">
 
 ## 开发路线
-- [ ] 所有未完成组件
 - [ ] 系统日志丢包检测与修复
 - [ ] TP-LINK交换机: TL-SG2024MP 8.0 (新开项目)
 

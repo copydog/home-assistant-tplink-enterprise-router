@@ -56,7 +56,6 @@ SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
                         "ap_name": host.get('ap_name', ''),
                         "connect_date": host.get('connect_date', ''),
                         "connect_time": host.get('connect_time', ''),
-                        "connection_type": host.get('type', '')
                     }
                     for host in status['hosts']
                     if host.get('ap_name') == ap_name and host.get('type') == 'wireless' and host.get('ip')

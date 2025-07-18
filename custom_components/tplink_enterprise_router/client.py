@@ -192,7 +192,7 @@ class TPLinkEnterpriseRouterClient:
 
         ap_list = json.get("apmng_set", {}).get("ap_list", [])
         ap_list = [inner_dict for item in ap_list for inner_dict in item.values()]
-        ap_list = [{key: item[key] for key in ['entry_name', 'entry_id', 'mac', 'status', 'led'] if key in item} for
+        ap_list = [{key: unquote(item[key]) for key in ['entry_name', 'entry_id', 'mac', 'status', 'led'] if key in item} for
                    item in ap_list]
         ap_count = len(ap_list)
         ap_online_count = sum(1 for ap in ap_list if ap.get("status") == "2")
@@ -202,7 +202,7 @@ class TPLinkEnterpriseRouterClient:
 
         """ Get SSID List """
         ssid_list = json.get("apmng_wserv", {}).get("wlan_serv", [])
-        ssid_list = [{key: item[key] for key in ['ssid', 'enable', 'serv_id'] if key in item} for dict in ssid_list for
+        ssid_list = [{key: unquote(item[key]) for key in ['ssid', 'enable', 'serv_id'] if key in item} for dict in ssid_list for
                      item in dict.values()]
 
         return {
