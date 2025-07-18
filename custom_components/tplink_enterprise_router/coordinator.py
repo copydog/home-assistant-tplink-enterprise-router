@@ -1,18 +1,17 @@
 from __future__ import annotations
-from datetime import timedelta, datetime
-import logging
 
-from collections.abc import Callable
+import logging
+from datetime import timedelta
 from urllib.parse import unquote
 
-from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
-from .const import DOMAIN
+from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from custom_components.tplink_enterprise_router.client import TPLinkEnterpriseRouterClient
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,21 +23,16 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
             hass: HomeAssistant,
             entry: ConfigEntry,
     ) -> None:
-
-        update_interval = entry.data.get('update_interval') or 30
         self.host = entry.data.get('host')
         username = entry.data.get('username')
         password = entry.data.get('password')
+        update_interval = entry.data.get('update_interval') or 30
         self.status = {
             "polling": True,
         }
         self.device_info = None
-
         self.unique_id = entry.entry_id
         self.client = TPLinkEnterpriseRouterClient(hass, self.host, username, password)
-        self.scan_stopped_at: datetime | None = None
-        self.client_log_sensor = None
-        self.debug_log_sensor = None
         self.force_update = False
 
         super().__init__(
@@ -48,19 +42,10 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=update_interval),
         )
 
-    @staticmethod
-    def request(router: TPLinkEnterpriseRouterClient, callback: Callable):
-        router.authenticate()
-        data = callback()
-
-        return data
-
     async def reboot(self) -> None:
-        await self.client.authenticate()
         await self.client.reboot()
 
     async def set_ap_light(self, status: str) -> None:
-        await self.client.authenticate()
         await self.client.set_ap_light(status)
 
     async def set_polling(self, value: bool) -> None:
@@ -84,16 +69,12 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
 
         self.force_update = False
 
-        await self.client.authenticate()
-
+        """ Update status """
         data = await self.client.get_status()
 
-        self.set_status({
-            **data,
-            "host_count": data['wireless_host_count'] + data['wired_host_count'],
-        })
+        self.set_status(data)
 
-
+        """ Build DeviceInfo """
         if data['device_info'].get('model'):
             self.router_name = f"TP-Link {data['device_info']['model']} ({self.host})"
 

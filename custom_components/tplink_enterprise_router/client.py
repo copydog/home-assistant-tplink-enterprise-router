@@ -31,24 +31,51 @@ class TPLinkEnterpriseRouterClient:
             raise IntegrationError(f"Cannot connect router {e}")
 
     async def logout(self):
+        if self.token is None:
+            return
+
         await self.request(f"{self.host}/stok={self.token}/ds", {"method": "do", "system": {"logout": None}})
 
     async def reboot(self):
-        await self.request(f"{self.host}/stok={self.token}/ds", {"method": "do", "system": {"reboot": None}})
+        if self.token is None:
+            await self.authenticate()
+
+        json = await self.request(f"{self.host}/stok={self.token}/ds", {"method": "do", "system": {"reboot": None}})
+
+        if json.get("error_code") == -40401:
+            self.token = None
+            await self.reboot_ap_list()
 
     async def set_ap_light(self, status: str):
-        await self.request(
+        if self.token is None:
+            await self.authenticate()
+
+        json = await self.request(
             f"{self.host}/stok={self.token}/ds",
             {"method": "set", "apmng_set": {"ap_led_global_switch": {"led_switch": status}}}
         )
 
+        if json.get("error_code") == -40401:
+            self.token = None
+            await self.reboot_ap_list(status)
+
     async def reboot_ap_list(self, id_list: list):
-        await self.request(
+        if self.token is None:
+            await self.authenticate()
+
+        json = await self.request(
             f"{self.host}/stok={self.token}/ds",
             {"method": "do", "apmng_status": {"ap_reboot": {"entry_id": id_list}}}
         )
 
+        if json.get("error_code") == -40401:
+            self.token = None
+            await self.reboot_ap_list(id_list)
+
     async def get_status(self):
+        if self.token is None:
+            await self.authenticate()
+
         json = await self.request(
             f"{self.host}/stok={self.token}/ds",
             {
@@ -88,6 +115,11 @@ class TPLinkEnterpriseRouterClient:
                     }
                 }
             })
+
+        """ Authenticate before request """
+        if json.get("error_code") == -40401:
+            self.token = None
+            return await self.get_status()
 
         system = json.get("system", {})
 
@@ -189,6 +221,7 @@ class TPLinkEnterpriseRouterClient:
         ]
 
         return {
+            "host_count": wireless_host_count + wired_host_count,
             "wired_host_count": wired_host_count,
             "wireless_host_count": wireless_host_count,
             "ssid_host_count": ssid_host_count,

@@ -31,9 +31,7 @@
       "syslog_config": {
         "description": "",
         "data": {
-          "syslog_event": "Syslog Event",
-          "client_log_sensor": "Add Client Log Sensor",
-          "debug_log_sensor": "Add Debug Log Sensor"
+          "syslog_event": "Syslog Event"
         }
       }
     }
