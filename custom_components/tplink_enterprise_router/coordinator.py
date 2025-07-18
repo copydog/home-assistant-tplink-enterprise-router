@@ -45,6 +45,15 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
     async def reboot(self) -> None:
         await self.client.reboot()
 
+    async def reboot_ap(self):
+        ap_list = self.status.get("ap_list", [])
+
+        if ap_list is None:
+            return
+
+        id_list = [d["entry_id"] for d in ap_list]
+        await self.client.reboot_ap(id_list)
+
     async def set_ap_light(self, status: str) -> None:
         await self.client.set_ap_light(status)
 

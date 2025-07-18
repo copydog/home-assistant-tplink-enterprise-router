@@ -66,6 +66,14 @@ BUTTON_TYPES = (
         entity_category=EntityCategory.CONFIG,
         method=lambda coordinator: coordinator.set_ap_light("off"),
     ),
+TPLinkButtonEntityDescription(
+        key="reboot_ap",
+        name="Reboot AP",
+        translation_key="reboot_ap",
+        device_class=ButtonDeviceClass.UPDATE,
+        entity_category=EntityCategory.CONFIG,
+        method=lambda coordinator: coordinator.reboot_ap(),
+    ),
 )
 
 

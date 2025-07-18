@@ -12,7 +12,7 @@ Home Assistant Integration for TP-Link Enterprise Router
 <img src="https://raw.githubusercontent.com/copydog/home-assistant-tplink-enterprise-router/refs/heads/main/docs/media/screenshot.png">
 
 ## 开发路线
-- [ ] 所有未完成组
+- [ ] 所有未完成组件
 - [ ] 系统日志丢包检测与修复
 - [ ] TP-LINK交换机: TL-SG2024MP 8.0 (新开项目)
 
@@ -35,7 +35,7 @@ Home Assistant Integration for TP-Link Enterprise Router
 - [x] 轮询状态
 - [x] 打开所有AP指示灯
 - [x] 关闭所有AP指示灯
-- [ ] 重启所有AP
+- [x] 重启所有AP
 - [ ] 一键射频调优
 - [ ] SSID 启用开关、隐藏开关
 
