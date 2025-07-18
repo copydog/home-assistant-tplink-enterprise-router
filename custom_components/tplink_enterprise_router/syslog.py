@@ -117,7 +117,7 @@ class WirelessClientChangedEventMatcher(EventMatcher):
                 "readable_message": self.build_readable_message(data)
             }
         self.hass.bus.fire(f"{DOMAIN}_wireless_client_changed", final_data)
-        self.hass.bus.fire(f"{DOMAIN}_wireless_client_updated", final_data)
+        self.hass.bus.fire(f"{DOMAIN}_syslog", final_data)
 
 class WirelessClientRoamedEventMatcher(WirelessClientChangedEventMatcher):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
@@ -135,7 +135,7 @@ class WirelessClientConnectedEventMatcher(WirelessClientChangedEventMatcher):
             hass,
             entry,
             [7],
-                r"\w{3}\s\d{1,2}\s[\d:]{6,8}\s(?P<device>.+)\swstation:\s(?P<timestamp>.+)\s<\d>\s:\s{1,2}STA\(MAC\s(?P<client_mac>[\w-]+)\)成功连接到AP\s(?P<ap_name>.+)\(IP\s(?P<ap_ip>[\d\.]+);MAC\s(?P<ap_mac>[\w-]+)\)的无线服务\s(?P<ap_ssid>.+)\((?P<ap_frequency>2\.4G|5G)\).",
+            r"\w{3}\s\d{1,2}\s[\d:]{6,8}\s(?P<device>.+)\swstation:\s(?P<timestamp>.+)\s<\d>\s:\s{1,2}STA\(MAC\s(?P<client_mac>[\w-]+)\)成功连接到AP\s(?P<ap_name>.+)\(IP\s(?P<ap_ip>[\d\.]+);MAC\s(?P<ap_mac>[\w-]+)\)的无线服务\s(?P<ap_ssid>.+)\((?P<ap_frequency>2\.4G|5G)\).",
             "wireless_client_connected"
         )
 

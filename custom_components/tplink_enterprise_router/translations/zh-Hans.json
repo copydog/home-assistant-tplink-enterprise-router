@@ -11,7 +11,8 @@
           "password": "密码",
           "update_interval": "更新间隔",
           "syslog_event": "Syslog事件",
-          "enable_syslog_event": "启用日志事件"
+          "enable_syslog_event": "启用日志事件",
+          "enable_poll_event": "启用轮询事件"
         }
       }
     }
@@ -27,7 +28,8 @@
           "password": "密码",
           "update_interval": "更新间隔",
           "syslog_event": "Syslog事件",
-          "enable_syslog_event": "启用日志事件"
+          "enable_syslog_event": "启用日志事件",
+          "enable_poll_event": "启用轮询事件"
         }
       }
     }

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import timedelta
+from datetime import timedelta, datetime
 from urllib.parse import unquote
 
 from homeassistant.config_entries import ConfigEntry
@@ -12,6 +12,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from custom_components.tplink_enterprise_router.client import TPLinkEnterpriseRouterClient
 from .const import DOMAIN
+from .poll_tracker import PollTracker
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,9 +25,10 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
             entry: ConfigEntry,
     ) -> None:
         self.host = entry.data.get('host')
+        self.entry = entry
         username = entry.data.get('username')
         password = entry.data.get('password')
-        update_interval = entry.data.get('update_interval') or 60
+        update_interval = entry.data.get('update_interval', 30)
         self.status = {
             "polling": True,
         }
@@ -34,6 +36,7 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
         self.unique_id = entry.entry_id
         self.client = TPLinkEnterpriseRouterClient(hass, self.host, username, password)
         self.force_update = False
+        self.poll_tracker = PollTracker(hass)
 
         super().__init__(
             hass,
@@ -87,6 +90,8 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
 
         self.force_update = False
 
+        start_time = datetime.now()
+
         """ Pull status """
         data = await self.client.get_status()
 
@@ -110,9 +115,13 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
             configuration_url=self.host,
             connections={(CONNECTION_NETWORK_MAC, data['device_info']['mac'])},
             identifiers={(DOMAIN, data['device_info']['mac'])},
-            manufacturer="TP-LINK",
+            manufacturer="TP-Link",
             model=data['device_info']['model'],
             name=self.router_name,
             sw_version=self.firmware_version,
             hw_version=data['device_info']['hardware_version'],
         )
+
+        """ PollTracker handle hosts """
+        if self.entry.data.get("enable_poll_event", False):
+            await self.poll_tracker.handle(data, start_time)

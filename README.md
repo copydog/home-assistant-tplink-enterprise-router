@@ -17,7 +17,9 @@ Home Assistant Integration for TP-Link Enterprise Router
 
 ## 组件
 ### 事件
-这个功能用了 homeassistant-syslog-receiver, 但是要改一些代码，后面我会给作者提交PR
+轮询事件更新速度小于你设置的轮询时间（一般是30秒），实测准确度100%
+系统日志更新速度小于1秒，实测准确度99.9%（取决于内网UDP丢包以及网络稳定性），算法校准后能保证当前连接ap的准确性，无法保证漫游路径顺序的准确性
+系统日志事件功能用了 homeassistant-syslog-receiver, 但是要改一些代码，后面我会给作者提交PR
 
 - [ ] [仅测试模式]tplink_enterprise_router_wireless_web_login: 每次登陆后台管理页面的时候发送
 - [x] tplink_enterprise_router_wireless_client_roamed: 客户端漫游到其他AP设备时发送

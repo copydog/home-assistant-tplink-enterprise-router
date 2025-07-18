@@ -32,8 +32,9 @@ class TPLinkEnterpriseRouterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN)
                 vol.Required("host", default=DEFAULT_HOST): str,
                 vol.Required("username"): str,
                 vol.Required("password"): str,
-                vol.Required("update_interval", default=60): int,
+                vol.Required("update_interval", default=30): int,
                 vol.Required("enable_syslog_event", default=False): bool,
+                vol.Required("enable_poll_event", default=False): bool,
             }),
             errors=errors
         )
