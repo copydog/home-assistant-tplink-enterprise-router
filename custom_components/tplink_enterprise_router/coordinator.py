@@ -26,7 +26,7 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
         self.host = entry.data.get('host')
         username = entry.data.get('username')
         password = entry.data.get('password')
-        update_interval = entry.data.get('update_interval') or 30
+        update_interval = entry.data.get('update_interval') or 60
         self.status = {
             "polling": True,
         }
