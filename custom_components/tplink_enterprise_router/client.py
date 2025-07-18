@@ -129,6 +129,9 @@ class TPLinkEnterpriseRouterClient:
             self.token = None
             return await self.get_status()
 
+        return self.process_data(json)
+
+    def process_data(self, json):
         system = json.get("system", {})
 
         """ Calculate cpu used """
@@ -148,17 +151,20 @@ class TPLinkEnterpriseRouterClient:
         """ Calculate hosts """
         hosts = json['host_management']['host_info']
         clean_hosts = [list(item.values())[0] for item in hosts]
-        for item in clean_hosts:
-            ap_name = item.get("ap_name")
-            connect_date = item.get("connect_date")
-            connect_time = item.get("connect_time")
-            ssid = item.get("ssid")
-            rssi = item.get("rssi")
-            item["ap_name"] = unquote(ap_name) if ap_name is not None else ""
-            item["connect_date"] = unquote(connect_date) if connect_date is not None else ""
-            item["connect_time"] = unquote(connect_time) if connect_time is not None else ""
-            item["ssid"] = unquote(ssid) if ssid is not None else ""
-            item["rssi"] = unquote(rssi) if rssi is not None else ""
+        clean_hosts = [
+            {key: unquote(item.get(key, ''))
+             for key in
+             ['connect_date', 'rssi', 'ip', 'hostname', 'connect_time', 'mac', 'type', 'ssid', 'freq_name', 'ap_name']
+             if key in item} for item in clean_hosts
+        ]
+        wireless_hosts = [
+            {k: v for k, v in host.items() if k != "type"}
+            for host in clean_hosts if host.get("type") == "wireless"
+        ]
+        wired_hosts = [
+            {k: v for k, v in host.items() if k != "type"}
+            for host in clean_hosts if host.get("type") == "wired"
+        ]
 
         """ Calculate SSID count """
         host_count_info = json['host_management']['host_count_info']
@@ -181,52 +187,18 @@ class TPLinkEnterpriseRouterClient:
             wired_host_count = host_count_info['wired_host_count']
             wireless_host_count = host_count_info['wireless_host_count']
         else:
-            wired_host_count = 0
-            wireless_host_count = 0
-            for host_info in clean_hosts:
-                if host_info.get("type") == "wired":
-                    wired_host_count += 1
-                elif host_info.get("type") == "wireless":
-                    wireless_host_count += 1
-
-        """ Calculate AP status """
-        if json and json.get("error_code") != 0:
-            return {
-                "ap_count": 0,
-                "ap_list": [],
-                "ap_online_count": 0,
-                "ap_online_list": []
-            }
+            wired_host_count = len(wired_hosts)
+            wireless_host_count = len(wireless_hosts)
 
         ap_list = json.get("apmng_set", {}).get("ap_list", [])
-        ap_list = [
-            inner_dict
-            for item in ap_list
-            for inner_dict in item.values()
-        ]
-        ap_list = [
-            {key: item[key] for key in ['entry_name', 'entry_id', 'mac', 'status', 'led'] if key in item}
-            for item in ap_list
-        ]
+        ap_list = [inner_dict for item in ap_list for inner_dict in item.values()]
+        ap_list = [{key: item[key] for key in ['entry_name', 'entry_id', 'mac', 'status', 'led'] if key in item} for
+                   item in ap_list]
         ap_count = len(ap_list)
-        ap_online_count = sum(
-            1 for ap in ap_list
-            if ap.get("status") == "2"
-        )
-        ap_offline_count = sum(
-            1 for ap in ap_list
-            if ap.get("status") != "2"
-        )
-        ap_online_list = [
-            ap
-            for ap in ap_list
-            if ap.get("status") == "2"
-        ]
-        ap_offline_list = [
-            ap
-            for ap in ap_list
-            if ap.get("status") != "2"
-        ]
+        ap_online_count = sum(1 for ap in ap_list if ap.get("status") == "2")
+        ap_offline_count = sum(1 for ap in ap_list if ap.get("status") != "2")
+        ap_online_list = [ap for ap in ap_list if ap.get("status") == "2"]
+        ap_offline_list = [ap for ap in ap_list if ap.get("status") != "2"]
 
         """ Get SSID List """
         ssid_list = json.get("apmng_wserv", {}).get("wlan_serv", [])
@@ -234,7 +206,10 @@ class TPLinkEnterpriseRouterClient:
                      item in dict.values()]
 
         return {
-            "host_count": wireless_host_count + wired_host_count,
+            "hosts": clean_hosts,
+            "wireless_hosts": wireless_hosts,
+            "wired_hosts": wired_hosts,
+            "host_count": len(hosts),
             "wired_host_count": wired_host_count,
             "wireless_host_count": wireless_host_count,
             "ssid_host_count": ssid_host_count,
@@ -242,7 +217,6 @@ class TPLinkEnterpriseRouterClient:
             "memory_used": system.get("mem_usage", {}).get("mem"),
             "wan_states": wan_states,
             "wan_count": wan_count,
-            "hosts": clean_hosts,
             "device_info": system.get("device_info"),
             "ap_count": ap_count,
             "ap_list": ap_list,
