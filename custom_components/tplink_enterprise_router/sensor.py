@@ -43,20 +43,7 @@ SENSOR_TYPES: tuple[TPLinkEnterpriseRouterSensorEntityDescription, ...] = (
             "hosts": status['wireless_hosts'],
             "ap_connected_hosts": {
                 ap_name: [
-                    {
-                        "name": (lambda h:
-                                 h.get('name', h.get('mac', 'Unknown'))
-                                 if not h.get('hostname') or unquote(h.get('hostname')) == '---'
-                                 else unquote(h.get('hostname'))
-                                 )(host),
-                        "mac": host.get('mac', ''),
-                        "ip": host.get('ip', ''),
-                        "ssid": host.get('ssid', ''),
-                        "rssi": host.get('rssi', ''),
-                        "ap_name": host.get('ap_name', ''),
-                        "connect_date": host.get('connect_date', ''),
-                        "connect_time": host.get('connect_time', ''),
-                    }
+                    host
                     for host in status['hosts']
                     if host.get('ap_name') == ap_name and host.get('type') == 'wireless' and host.get('ip')
                 ]
