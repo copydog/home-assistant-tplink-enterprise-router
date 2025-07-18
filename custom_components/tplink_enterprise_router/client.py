@@ -44,7 +44,7 @@ class TPLinkEnterpriseRouterClient:
 
         if json.get("error_code") == -40401:
             self.token = None
-            await self.reboot_ap_list()
+            await self.reboot()
 
     async def set_ap_light(self, status: str):
         if self.token is None:
@@ -57,7 +57,7 @@ class TPLinkEnterpriseRouterClient:
 
         if json.get("error_code") == -40401:
             self.token = None
-            await self.reboot_ap_list(status)
+            await self.set_ap_light(status)
 
     async def reboot_ap_list(self, id_list: list):
         if self.token is None:
