@@ -34,7 +34,7 @@ Home Assistant Integration for TP-Link Enterprise Router
 - [x] 刷新
 - [x] 轮询状态
 - [x] 关闭 / 打开所有AP指示灯
-- [ ] SSID 启用开关、隐藏开关
+- [x] SSID 启用开关
 
 ### 传感器
 - [x] 客户端总数 / 有线客户端总数 / 无线客户端总数 / 列表

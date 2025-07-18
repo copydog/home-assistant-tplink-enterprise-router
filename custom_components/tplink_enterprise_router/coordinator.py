@@ -65,6 +65,11 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
         self.set_status({
             "polling": value
         })
+        await self.async_refresh()
+
+    async def set_ssid(self, serv_id: str, para) -> None:
+        await self.client.set_ssid(serv_id, para)
+        await self.async_refresh()
 
     async def refresh(self) -> None:
         self.force_update = True
@@ -82,8 +87,15 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
 
         self.force_update = False
 
-        """ Update status """
+        """ Pull status """
         data = await self.client.get_status()
+
+        """ Update ssid status """
+        ssid_list = data.get("ssid_list", [])
+        for ssid in ssid_list:
+            serv_id = ssid.get("serv_id")
+            _property = f"__SSID_{serv_id}"
+            data[_property] = ssid.get("enable") == 'on'
 
         self.set_status(data)
 

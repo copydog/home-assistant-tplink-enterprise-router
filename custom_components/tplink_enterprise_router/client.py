@@ -72,6 +72,22 @@ class TPLinkEnterpriseRouterClient:
             self.token = None
             await self.reboot_ap(id_list)
 
+    async def set_ssid(self, serv_id, para):
+        if self.token is None:
+            await self.authenticate()
+
+        json = await self.request(
+            f"{self.host}/stok={self.token}/ds",
+            {
+                "method": "set",
+                "apmng_wserv": {"table": "wlan_serv", "filter": [{"serv_id": str(serv_id)}], "para": para}
+            }
+        )
+
+        if json.get("error_code") == -40401:
+            self.token = None
+            await self.set_ssid(serv_id, para)
+
     async def get_status(self):
         if self.token is None:
             await self.authenticate()
@@ -91,28 +107,20 @@ class TPLinkEnterpriseRouterClient:
                         "device_info"
                     ]
                 },
-                "online_check": {
-                    "table": "state",
-                    "name": "state"
-                },
+                "online_check": {"table": "state", "name": "state"},
                 "apmng_status": {
                     "name": "apmng_status"
                 },
                 "apmng_set": {
                     "table": "ap_list",
                     "filter": [
-                        {
-                            "group_id": "0",
-                            "ap_role": "re_all"
-                        },
-                        {
-                            "group_id": "0"
-                        }
+                        {"group_id": "0", "ap_role": "re_all"}, {"group_id": "0"}
                     ],
-                    "para": {
-                        "start": 0,
-                        "end": 499
-                    }
+                    "para": {"start": 0, "end": 499}
+                },
+                "apmng_wserv": {
+                    "table": "wlan_serv", "filter": {"network_type": ["1", "2", "3"]},
+                    "para": {"start": 0, "end": 9}
                 }
             })
 
@@ -220,6 +228,11 @@ class TPLinkEnterpriseRouterClient:
             if ap.get("status") != "2"
         ]
 
+        """ Get SSID List """
+        ssid_list = json.get("apmng_wserv", {}).get("wlan_serv", [])
+        ssid_list = [{key: item[key] for key in ['ssid', 'enable', 'serv_id'] if key in item} for dict in ssid_list for
+                     item in dict.values()]
+
         return {
             "host_count": wireless_host_count + wired_host_count,
             "wired_host_count": wired_host_count,
@@ -237,6 +250,7 @@ class TPLinkEnterpriseRouterClient:
             "ap_online_list": ap_online_list,
             "ap_offline_count": ap_offline_count,
             "ap_offline_list": ap_offline_list,
+            "ssid_list": ssid_list,
         }
 
     async def request(self, url, payload):
