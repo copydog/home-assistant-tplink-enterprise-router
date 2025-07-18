@@ -91,6 +91,9 @@
       "reboot_ap": {
         "name": "Reboot AP"
       },
+      "reboot_ap_and_router": {
+        "name": "Reboot AP and Router"
+      },
       "turn_on_ap_light": {
         "name": "Turn On AP Light"
       },

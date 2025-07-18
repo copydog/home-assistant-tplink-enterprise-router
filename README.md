@@ -30,13 +30,10 @@ Home Assistant Integration for TP-Link Enterprise Router
 - [ ] tplink_enterprise_router_unstable_wireless_client_detected: 当客户端短时间内频繁连接和断线时发送
 
 ### 开关 / 按钮
-- [x] 重启
+- [x] 重启路由 / 重启AP / 重启AP和路由
 - [x] 刷新
 - [x] 轮询状态
-- [x] 打开所有AP指示灯
-- [x] 关闭所有AP指示灯
-- [x] 重启所有AP
-- [ ] 一键射频调优
+- [x] 关闭 / 打开所有AP指示灯
 - [ ] SSID 启用开关、隐藏开关
 
 ### 传感器

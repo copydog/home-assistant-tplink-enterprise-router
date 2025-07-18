@@ -90,6 +90,9 @@
       "reboot_ap": {
         "name": "重启AP"
       },
+      "reboot_ap_and_router": {
+        "name": "重启AP和路由"
+      },
       "turn_on_ap_light": {
         "name": "打开所有AP指示灯"
       },

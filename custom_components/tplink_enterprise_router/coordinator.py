@@ -54,6 +54,10 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
         id_list = [d["entry_id"] for d in ap_list]
         await self.client.reboot_ap(id_list)
 
+    async def reboot_ap_and_router(self):
+        await self.reboot_ap()
+        await self.reboot()
+
     async def set_ap_light(self, status: str) -> None:
         await self.client.set_ap_light(status)
 

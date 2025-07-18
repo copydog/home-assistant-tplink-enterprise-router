@@ -51,6 +51,22 @@ BUTTON_TYPES = (
         method=lambda coordinator: coordinator.reboot(),
     ),
     TPLinkButtonEntityDescription(
+        key="reboot_ap",
+        name="Reboot AP",
+        translation_key="reboot_ap",
+        device_class=ButtonDeviceClass.RESTART,
+        entity_category=EntityCategory.CONFIG,
+        method=lambda coordinator: coordinator.reboot_ap(),
+    ),
+    TPLinkButtonEntityDescription(
+        key="reboot_ap_and_router",
+        name="Reboot AP and Router",
+        translation_key="reboot_ap_and_router",
+        device_class=ButtonDeviceClass.RESTART,
+        entity_category=EntityCategory.CONFIG,
+        method=lambda coordinator: coordinator.reboot_ap_and_router(),
+    ),
+    TPLinkButtonEntityDescription(
         key="turn_on_ap_light",
         name="Turn On AP Light",
         translation_key="turn_on_ap_light",
@@ -65,14 +81,6 @@ BUTTON_TYPES = (
         device_class=ButtonDeviceClass.UPDATE,
         entity_category=EntityCategory.CONFIG,
         method=lambda coordinator: coordinator.set_ap_light("off"),
-    ),
-TPLinkButtonEntityDescription(
-        key="reboot_ap",
-        name="Reboot AP",
-        translation_key="reboot_ap",
-        device_class=ButtonDeviceClass.UPDATE,
-        entity_category=EntityCategory.CONFIG,
-        method=lambda coordinator: coordinator.reboot_ap(),
     ),
 )
 
