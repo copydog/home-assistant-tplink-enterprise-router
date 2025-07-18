@@ -4,12 +4,15 @@
 
 Home Assistant Integration for TP-Link Enterprise Router
 
-> [!WARNING]
-> 你可以通过关闭 轮询状态开关 来停止轮询，这样就不会每次轮询的时候把你踢下线
-
 查看 [支持的路由](#supports)
 
 <img src="https://raw.githubusercontent.com/copydog/home-assistant-tplink-enterprise-router/refs/heads/main/docs/media/screenshot.png">
+
+## 你需要知道的系统设计
+- 为保证轮询性能，每次调用接口，不再重新登陆，除非令牌失效
+- 为保证本项目最小化，系统日志时间会基于homeassistant-syslog-receiver转发事件，有轻微的延迟
+- 部分设备的系统日志是基于udp协议通知，有极小丢包、乱序风险（可能会强制放弃部分漫游事件）
+- 搭配开源项目eventsensor，会事半功倍
 
 ## 开发路线
 - [ ] 系统日志丢包检测与修复
@@ -18,15 +21,14 @@ Home Assistant Integration for TP-Link Enterprise Router
 ## 组件
 ### 事件
 轮询事件更新速度小于你设置的轮询时间（一般是30秒），实测准确度100%
-系统日志更新速度小于1秒，实测准确度99.9%（取决于内网UDP丢包以及网络稳定性），算法校准后能保证当前连接ap的准确性，无法保证漫游路径顺序的准确性
+系统日志更新速度小于1秒，实测准确度99.9%（取决于内网网络稳定性），算法校准后能保证当前连接ap的准确性，不保证漫游过程准确性
 系统日志事件功能用了 homeassistant-syslog-receiver, 但是要改一些代码，后面我会给作者提交PR
 
-- [ ] [仅测试模式]tplink_enterprise_router_wireless_web_login: 每次登陆后台管理页面的时候发送
+- [ ] tplink_enterprise_router_wireless_web_login: 每次登陆后台管理页面的时候发送
 - [x] tplink_enterprise_router_wireless_client_roamed: 客户端漫游到其他AP设备时发送
 - [x] tplink_enterprise_router_wireless_client_connected: 客户端连接到AP时发送
 - [x] tplink_enterprise_router_wireless_client_disconnected: 客户端断开连接时发送
 - [x] tplink_enterprise_router_wireless_client_changed: 当客户端，断开、连接、漫游、频段切换时发送，仅检测系统日志
-- [x] tplink_enterprise_router_wireless_client_updated: 当客户端，断开、连接、漫游、频段切换时发送，与changed不同的是轮询的数据也会发送
 - [ ] tplink_enterprise_router_dhcp_ip_assigned: 当路由器给客户端分配IP时发送
 - [ ] tplink_enterprise_router_unstable_wireless_client_detected: 当客户端短时间内频繁连接和断线时发送
 
