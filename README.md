@@ -12,7 +12,7 @@ Home Assistant Integration for TP-Link Enterprise Router
 <img src="https://raw.githubusercontent.com/copydog/home-assistant-tplink-enterprise-router/refs/heads/main/docs/media/screenshot.png">
 
 ## 开发路线
-- [ ] 所有未完成组件
+- [ ] 所有未完成组
 - [ ] 系统日志丢包检测与修复
 - [ ] TP-LINK交换机: TL-SG2024MP 8.0 (新开项目)
 
@@ -40,15 +40,11 @@ Home Assistant Integration for TP-Link Enterprise Router
 - [ ] SSID 启用开关、隐藏开关
 
 ### 传感器
-- [x] 客户端总数
-- [x] 有线客户端总数
-- [x] 无线客户端总数
-- [x] CPU 使用率
-- [x] 内存使用率
-- [x] WAN 总数
-- [x] WAN 状态
-- [x] SSID 设备统计
-- [x] AP 连接设备统计 
+- [x] 客户端总数 / 有线客户端总数 / 无线客户端总数 / 列表
+- [x] CPU 使用率 / 内存使用率
+- [x] WAN 总数 / 状态
+- [x] SSID 设备统计 / 列表
+- [x] AP 总数 / 在线总数 / 离线总数 / 列表
 
 ## <a id="supports">支持的路由器</a>
 - TL-R479GPE-AC (我用这个)

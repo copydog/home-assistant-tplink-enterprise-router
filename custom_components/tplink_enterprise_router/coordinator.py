@@ -39,6 +39,7 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
         self.scan_stopped_at: datetime | None = None
         self.client_log_sensor = None
         self.debug_log_sensor = None
+        self.force_update = False
 
         super().__init__(
             hass,
@@ -67,6 +68,10 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
             "polling": value
         })
 
+    async def refresh(self) -> None:
+        self.force_update = True
+        await self.async_refresh()
+
     def set_status(self, data) -> None:
         self.status = {
             **self.status,
@@ -74,8 +79,10 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
         }
 
     async def _async_update_data(self):
-        if not self.status["polling"]:
+        if not self.status["polling"] and not self.force_update:
             return
+
+        self.force_update = False
 
         await self.client.authenticate()
 

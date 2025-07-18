@@ -40,7 +40,7 @@ BUTTON_TYPES = (
         translation_key="refresh",
         device_class=ButtonDeviceClass.UPDATE,
         entity_category=EntityCategory.CONFIG,
-        method=lambda coordinator: coordinator.async_refresh(),
+        method=lambda coordinator: coordinator.refresh(),
     ),
     TPLinkButtonEntityDescription(
         key="reboot",

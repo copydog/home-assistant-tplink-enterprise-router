@@ -88,7 +88,10 @@
         "name": "Refresh"
       },
       "reboot": {
-        "name": "Reboot"
+        "name": "Reboot Router"
+      },
+      "reboot_ap": {
+        "name": "Reboot AP"
       },
       "turn_on_ap_light": {
         "name": "Turn On AP Light"

@@ -85,7 +85,10 @@
         "name": "刷新"
       },
       "reboot": {
-        "name": "重启"
+        "name": "重启路由"
+      },
+      "reboot_ap": {
+        "name": "重启AP"
       },
       "turn_on_ap_light": {
         "name": "打开所有AP指示灯"
