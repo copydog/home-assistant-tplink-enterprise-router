@@ -87,11 +87,9 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
         await self.client.authenticate()
 
         data = await self.client.get_status()
-        ap_data = await self.client.get_ap_status()
 
         self.set_status({
             **data,
-            **ap_data,
             "host_count": data['wireless_host_count'] + data['wired_host_count'],
         })
 

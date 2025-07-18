@@ -71,6 +71,22 @@ class TPLinkEnterpriseRouterClient:
                 "apmng_status": {
                     "name": "apmng_status"
                 },
+                "apmng_set": {
+                    "table": "ap_list",
+                    "filter": [
+                        {
+                            "group_id": "0",
+                            "ap_role": "re_all"
+                        },
+                        {
+                            "group_id": "0"
+                        }
+                    ],
+                    "para": {
+                        "start": 0,
+                        "end": 499
+                    }
+                }
             })
 
         system = json.get("system", {})
@@ -133,42 +149,7 @@ class TPLinkEnterpriseRouterClient:
                 elif host_info.get("type") == "wireless":
                     wireless_host_count += 1
 
-        return {
-            "wired_host_count": wired_host_count,
-            "wireless_host_count": wireless_host_count,
-            "ssid_host_count": ssid_host_count,
-            "cpu_used": cpu_used,
-            "memory_used": system.get("mem_usage", {}).get("mem"),
-            "wan_states": wan_states,
-            "wan_count": wan_count,
-            "hosts": clean_hosts,
-            "device_info": system.get("device_info"),
-        }
-
-    async def get_ap_status(self):
-        json = await self.request(
-            f"{self.host}/stok={self.token}/ds",
-            {
-                "method": "get",
-                "apmng_set": {
-                    "table": "ap_list",
-                    "filter": [
-                        {
-                            "group_id": "0",
-                            "ap_role": "re_all"
-                        },
-                        {
-                            "group_id": "0"
-                        }
-                    ],
-                    "para": {
-                        "start": 0,
-                        "end": 499
-                    }
-                }
-            }
-        )
-
+        """ Calculate AP status """
         if json and json.get("error_code") != 0:
             return {
                 "ap_count": 0,
@@ -208,6 +189,15 @@ class TPLinkEnterpriseRouterClient:
         ]
 
         return {
+            "wired_host_count": wired_host_count,
+            "wireless_host_count": wireless_host_count,
+            "ssid_host_count": ssid_host_count,
+            "cpu_used": cpu_used,
+            "memory_used": system.get("mem_usage", {}).get("mem"),
+            "wan_states": wan_states,
+            "wan_count": wan_count,
+            "hosts": clean_hosts,
+            "device_info": system.get("device_info"),
             "ap_count": ap_count,
             "ap_list": ap_list,
             "ap_online_count": ap_online_count,
