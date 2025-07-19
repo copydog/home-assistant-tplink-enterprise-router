@@ -15,9 +15,15 @@ class TPLinkEnterpriseRouterOptionsFlowHandler(config_entries.OptionsFlow):
         data = self._config_entry.options or self._config_entry.data
 
         if user_input is not None:
-            if user_input.get("enable_syslog_event"):
+            if user_input.get("enable_syslog_notify_event"):
                 self._init_data = user_input
                 return await self.async_step_syslog_config()
+
+            self.hass.config_entries.async_update_entry(
+                self._config_entry,
+                data={**data, **user_input},
+                options={**data, **user_input},
+            )
 
             await self.hass.config_entries.async_reload(self._config_entry.entry_id)
 
@@ -31,9 +37,8 @@ class TPLinkEnterpriseRouterOptionsFlowHandler(config_entries.OptionsFlow):
             vol.Required("username", default=data.get("username", "")): str,
             vol.Required("password", default=data.get("password", "")): str,
             vol.Required("update_interval", default=data.get("update_interval", 30)): int,
-            vol.Required("enable_syslog_event", default=data.get("enable_syslog_event", False)): bool,
-            vol.Required("enable_poll_event", default=False): bool,
-            vol.Required("debug", default=False): bool,
+            vol.Required("enable_syslog_notify_event", default=data.get("enable_syslog_notify_event", False)): bool,
+            vol.Required("enable_syslog_poll_event", default=data.get("enable_syslog_poll_event", False)): bool,
         }
 
         return self.async_show_form(step_id="init", data_schema=vol.Schema(scheme))

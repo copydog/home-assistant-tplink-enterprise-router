@@ -10,8 +10,8 @@
           "username": "Username",
           "password": "Password",
           "update_interval": "Update Interval",
-          "enable_syslog_event": "Enable Syslog Event",
-          "enable_poll_event": "Enable Poll Event"
+          "enable_syslog_notify_event": "Enable Syslog Notify Event",
+          "enable_syslog_poll_event": "Enable Syslog Poll Event"
         }
       }
     }
@@ -26,8 +26,8 @@
           "username": "Username",
           "password": "Password",
           "update_interval": "Update Interval",
-          "enable_syslog_event": "Enable Syslog Event",
-          "enable_poll_event": "Enable Poll Event"
+          "enable_syslog_notify_event": "Enable Syslog Notify Event",
+          "enable_syslog_poll_event": "Enable Syslog Poll Event"
         }
       },
       "syslog_config": {

@@ -1,4 +1,5 @@
 import logging
+from urllib.parse import unquote
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Event, HomeAssistant
@@ -9,17 +10,18 @@ from custom_components.tplink_enterprise_router.const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
+
 class EventMatcher:
-    def __init__(self, hass: HomeAssistant, entry: ConfigEntry, severities: list, type: str):
+    def __init__(self, hass: HomeAssistant, entry: ConfigEntry, severities: list, _type: str):
         self.hass = hass
         self.entry = entry
         self.severities = severities
-        self.type = type
+        self.type = _type
         self.translations = None
 
         pass
 
-    async def process(self, event: Event) -> bool:
+    async def process(self, event: dict) -> bool:
         if self.translations is None:
             self.translations = await translation.async_get_translations(
                 self.hass,
@@ -28,14 +30,14 @@ class EventMatcher:
                 [DOMAIN],
             )
 
-        if event.data.get('severity') not in self.severities:
+        if event['severity'] not in self.severities:
             return False
 
-        message = event.data.get('message')
+        message = event['message']
         if not self.match(message):
             return False
 
-        matched_object = self.parse(message)
+        matched_object = self.parse(event)
 
         if matched_object is None:
             return False
@@ -45,7 +47,8 @@ class EventMatcher:
         return True
 
     def build_readable_message(self, data: dict) -> str:
-        template = self.translations.get(f"component.tplink_enterprise_router.component.tplink_enterprise_router.event.{self.type}")
+        template = self.translations.get(
+            f"component.tplink_enterprise_router.component.tplink_enterprise_router.event.{self.type}")
 
         if template is not None:
             return template.format_map(data)
@@ -55,17 +58,17 @@ class EventMatcher:
     def match(self, message: str) -> bool:
         raise NotImplementedError()
 
-    def parse(self, event: str):
+    def parse(self, event: dict):
         raise NotImplementedError()
 
     def _process(self, data) -> None:
         final_data = {
             **data,
             "type": self.type,
-            "readable_message": self.build_readable_message(data)
         }
         self.hass.bus.fire(f"{DOMAIN}_{self.type}", final_data)
         self.hass.bus.fire(f"{DOMAIN}_syslog", final_data)
+
 
 class WebLoginEventMatcher(EventMatcher):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
@@ -79,6 +82,7 @@ class WebLoginEventMatcher(EventMatcher):
     def _process(self, data) -> None:
         pass
 
+
 class WirelessClientChangedEventMatcher(EventMatcher):
     def _process(self, data) -> None:
         super()._process(data)
@@ -89,11 +93,9 @@ class WirelessClientChangedEventMatcher(EventMatcher):
                 "previous_status": "connected",
                 "current_status": "connected",
                 "type": self.type,
-                "readable_message": self.build_readable_message(data)
             }
         elif self.type == "wireless_client_connected":
             final_data = {
-                "device": data['device'],
                 "timestamp": data['timestamp'],
                 "client_mac": data['client_mac'],
                 "previous_ap_name": "",
@@ -105,11 +107,9 @@ class WirelessClientChangedEventMatcher(EventMatcher):
                 "current_ap_frequency": data['ap_frequency'],
                 "current_status": "connected",
                 "type": self.type,
-                "readable_message": self.build_readable_message(data)
             }
         elif self.type == "wireless_client_disconnected":
             final_data = {
-                "device": data['device'],
                 "timestamp": data['timestamp'],
                 "client_mac": data['client_mac'],
                 "previous_ap_name": "",
@@ -121,88 +121,93 @@ class WirelessClientChangedEventMatcher(EventMatcher):
                 "current_ap_frequency": "",
                 "current_status": "disconnected",
                 "type": self.type,
-                "readable_message": self.build_readable_message(data)
             }
         self.hass.bus.fire(f"{DOMAIN}_wireless_client_changed", final_data)
-        self.hass.bus.fire(f"{DOMAIN}_syslog", final_data)
+        self.hass.bus.fire(f"{DOMAIN}_syslog", {
+            **final_data,
+            "type": "wireless_client_changed",
+        })
+
 
 class WirelessClientRoamedEventMatcher(WirelessClientChangedEventMatcher):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
         super().__init__(
             hass,
             entry,
-            [7],
+            [1, 7],
             "wireless_client_roamed"
         )
 
     def match(self, message: str) -> bool:
         return "成功漫游到AP" in message
 
-    def parse(self, message: str):
-        segments = message.split(" ")
+    def parse(self, event: dict):
+        segments = event['message'].split(" ")
 
-        previous_ssid_groups = segments[13].replace(")", "(").split("(")
-        current_ssid_groups = segments[16].replace(")", "(").split("(")
+        previous_ssid_groups = segments[3].replace(")", "(").split("(")
+        current_ssid_groups = segments[6].replace(")", "(").split("(")
 
         return {
-            "device": segments[3],
-            "timestamp": f"{segments[5]} {segments[6]}",
-            "client_mac": segments[11][:17],
-            "previous_ap_name": segments[12].split("的")[0],
+            "source_ip": event['source_ip'],
+            "timestamp": event['timestamp'],
+            "client_mac": segments[1][:17],
+            "previous_ap_name": segments[2].split("的")[0],
             "previous_ap_ssid": previous_ssid_groups[0],
             "previous_ap_frequency": previous_ssid_groups[1],
-            "current_ap_name": segments[15].split("的")[0],
+            "current_ap_name": segments[5].split("的")[0],
             "current_ap_ssid": current_ssid_groups[0],
             "current_ap_frequency": current_ssid_groups[1],
         }
+
 
 class WirelessClientConnectedEventMatcher(WirelessClientChangedEventMatcher):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
         super().__init__(
             hass,
             entry,
-            [7],
+            [1, 7],
             "wireless_client_connected"
         )
 
     def match(self, message: str) -> bool:
         return "成功连接到AP" in message
 
-    def parse(self, message: str):
-        segments = message.split(" ")
+    def parse(self, event: dict):
+        segments = event['message'].split(" ")
 
-        ssid_groups = segments[15].split("(")
+        ssid_groups = segments[5].split("(")
 
         return {
-            "device": segments[3],
-            "timestamp": f"{segments[5]} {segments[6]}",
-            "client_mac": segments[11][:17],
-            "ap_name": segments[12].replace("(IP", ""),
-            "ap_ip": segments[11][:17].replace(";MAC", ""),
-            "ap_mac": segments[14][:17],
+            "source_ip": event['source_ip'],
+            "timestamp": event['timestamp'],
+            "client_mac": segments[1][:17],
+            "ap_name": segments[2].replace("(IP", ""),
+            "ap_ip": segments[3][:17].replace(";MAC", ""),
+            "ap_mac": segments[4][:17],
             "ap_ssid": ssid_groups[0],
             "ap_frequency": ssid_groups[1].replace(").", ""),
         }
+
 
 class WirelessClientDisconnectedEventMatcher(WirelessClientChangedEventMatcher):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
         super().__init__(
             hass,
             entry,
-            [7],
+            [1, 7],
             "wireless_client_disconnected"
         )
 
     def match(self, message: str) -> bool:
         return "断开连接." in message
 
-    def parse(self, message: str):
-        segments = message.split(" ")
+    def parse(self, event: dict):
+        segments = event['message'].split(" ")
 
         return {
-            "device": segments[3],
-            "timestamp": f"{segments[5]} {segments[6]}",
-            "client_mac": segments[11][:17]
+            "source_ip": event['source_ip'],
+            "timestamp": event['timestamp'],
+            "client_mac": segments[1][:17]
         }
 
 
@@ -214,26 +219,93 @@ class SyslogTracker:
             WirelessClientConnectedEventMatcher(hass, entry),
             WirelessClientDisconnectedEventMatcher(hass, entry),
         ]
-        self.index_message = None
-        self.last_received_time = None
+        self.tracking_dict = {}
         self.received_messages = []
         self.client = client
+        self.first_poll = True
 
     async def handle(self, event):
+        event_data = SyslogTracker.get_event_data(event)
+
+        """ Skip old log """
+        if SyslogTracker.should_track(event):
+            key = SyslogTracker.get_track_key(event_data)
+            old_tracking_data = self.tracking_dict.get(key)
+
+            if old_tracking_data is not None and old_tracking_data['timestamp'] >= event_data['timestamp']:
+                return
+
+            self.tracking_dict[key] = event_data
+
+        if self.first_poll:
+            return
+
         for matcher in self.matchers:
-            process_ok = await matcher.process(event)
+            process_ok = await matcher.process(event_data)
             if process_ok:
                 break
 
-    async def _initialize(self):
-        json = await self.client.get_syslog(1)
-        _messages = json.get("syslog", [])
-
-        self.index_message = _messages[0].get("syslog_1", None) if len(_messages) > 0 else None
-
-    async def check(self):
-        if self.index_message is None:
-            await self._initialize()
-
+    async def poll(self):
         json = await self.client.get_syslog(50)
-        _messages = json.get("syslog", [])
+        _messages = [list(d.values())[0] for d in json.get("syslog", [])]
+
+        for message in _messages:
+            await self.handle(Event(
+                'NONE',
+                {
+                    "message": unquote(message),
+                }
+            ))
+
+        if self.first_poll:
+            self.first_poll = False
+
+    @staticmethod
+    def should_track(event) -> bool:
+        message = event.data.get("message")
+        return "[WSTATION]" in message or "wstation:" in message
+
+    @staticmethod
+    def get_track_key(event_data: dict):
+        message = event_data['message']
+        segments = message.split(" ")
+
+        if "断开连接." in message:
+            return segments[1][:17]
+        elif "成功连接到AP" in message:
+            return segments[1][:17]
+        elif "成功漫游到AP" in message:
+            return segments[1][:17],
+        else:
+            return ""
+
+    @staticmethod
+    def get_event_data(event) -> dict:
+        message = event.data.get("message")
+        if message.startswith("<"):
+            timestamp = message[3:22]
+            severity = int(message[1:2])
+            if "[WSTATION]" in message:
+                message = message.split("[WSTATION]", 1)[1]
+            elif "[WEB]" in message:
+                message = message.split("[WEB]", 1)[1]
+            else:
+                message = ""
+
+            return {
+                "message": message,
+                "source_ip": event.data.get("source_ip"),
+                "severity": severity,
+                "timestamp": timestamp,
+            }
+        else:
+            segments = message.split(" ", 7)
+            timestamp = f"{segments[5]} {segments[6]}"
+            message = message.split("> : ", 1)[1].strip()
+
+            return {
+                "message": message,
+                "source_ip": event.data.get("source_ip"),
+                "severity": event.data.get("severity"),
+                "timestamp": timestamp,
+            }

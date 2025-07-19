@@ -12,8 +12,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from custom_components.tplink_enterprise_router.client import TPLinkEnterpriseRouterClient
 from .const import DOMAIN
-from custom_components.tplink_enterprise_router.event.poll_tracker import PollTracker
-from .event.syslog_tracker import SyslogTracker
+from .syslog_tracker import SyslogTracker
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -37,7 +36,6 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
         self.force_update = False
 
         self.entry = entry
-        self.poll_tracker = PollTracker(hass)
         self.client = TPLinkEnterpriseRouterClient(hass, self.host, username, password)
         self.syslog_tracker = SyslogTracker(hass, entry, self.client)
 
@@ -125,10 +123,8 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
             hw_version=data['device_info']['hardware_version'],
         )
 
-        """ PollTracker """
-        if self.entry.data.get("enable_poll_event", False):
-            await self.poll_tracker.handle(data, start_time)
-
-        """ SyslogChecker """
-        if self.entry.data.get("enable_syslog_event", False):
-            await self.syslog_tracker.check()
+        """ SyslogTracker poll """
+        _LOGGER.warning(self.entry.data)
+        _LOGGER.warning(self.entry.data.get("enable_syslog_poll_event"))
+        if self.entry.data.get("enable_syslog_poll_event", False):
+            await self.syslog_tracker.poll()

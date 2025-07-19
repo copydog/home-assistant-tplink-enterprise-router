@@ -26,7 +26,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     )
 
     """ Syslog event handler """
-    if entry.data.get("enable_syslog_event", False):
+    if entry.data.get("enable_syslog_notify_event", False):
         remove_listener = hass.bus.async_listen(
             entry.data.get("syslog_event", "syslog_receiver_message"), _coordinator.syslog_tracker.handle,
         )
