@@ -124,7 +124,5 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
         )
 
         """ SyslogTracker poll """
-        _LOGGER.warning(self.entry.data)
-        _LOGGER.warning(self.entry.data.get("enable_syslog_poll_event"))
         if self.entry.data.get("enable_syslog_poll_event", False):
             await self.syslog_tracker.poll()

@@ -210,23 +210,44 @@ class WirelessClientDisconnectedEventMatcher(WirelessClientChangedEventMatcher):
             "client_mac": segments[1][:17]
         }
 
+class DHCPIpAssignedEventMatcher(EventMatcher):
+    def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
+        super().__init__(
+            hass, entry,
+            [3],
+            "dhcp_ip_assigned"
+        )
+
+    def match(self, message: str) -> bool:
+        return "分配了IP地址" in message
+
+    def parse(self, event: dict):
+        segments = event['message'].split(" ")
+
+        return {
+            "source_ip": event['source_ip'],
+            "timestamp": event['timestamp'],
+            "client_mac": segments[1],
+            "ip": segments[2].replace("分配了IP地址", ""),
+        }
 
 class SyslogTracker:
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry, client: TPLinkEnterpriseRouterClient):
         self.matchers = [
             WebLoginEventMatcher(hass, entry),
+            DHCPIpAssignedEventMatcher(hass, entry),
             WirelessClientRoamedEventMatcher(hass, entry),
             WirelessClientConnectedEventMatcher(hass, entry),
             WirelessClientDisconnectedEventMatcher(hass, entry),
         ]
         self.tracking_dict = {}
-        self.received_messages = []
         self.client = client
         self.first_poll = True
+        self.last_log = None
 
     async def handle(self, event):
         event_data = SyslogTracker.get_event_data(event)
-
+        _LOGGER.warning(event_data)
         """ Skip old log """
         if SyslogTracker.should_track(event):
             key = SyslogTracker.get_track_key(event_data)
@@ -250,12 +271,14 @@ class SyslogTracker:
         _messages = [list(d.values())[0] for d in json.get("syslog", [])]
 
         for message in _messages:
-            await self.handle(Event(
-                'NONE',
-                {
-                    "message": unquote(message),
-                }
-            ))
+            if self.last_log is not None and message == self.last_log:
+                break
+
+            await self.handle(
+                Event('', {"message": unquote(message)})
+            )
+
+        self.last_log = _messages[0] if len(_messages) > 0 else self.last_log
 
         if self.first_poll:
             self.first_poll = False
@@ -270,6 +293,7 @@ class SyslogTracker:
         message = event_data['message']
         segments = message.split(" ")
 
+        # TODO: use scope
         if "断开连接." in message:
             return segments[1][:17]
         elif "成功连接到AP" in message:
@@ -285,12 +309,8 @@ class SyslogTracker:
         if message.startswith("<"):
             timestamp = message[3:22]
             severity = int(message[1:2])
-            if "[WSTATION]" in message:
-                message = message.split("[WSTATION]", 1)[1]
-            elif "[WEB]" in message:
-                message = message.split("[WEB]", 1)[1]
-            else:
-                message = ""
+            scope = message[23:].split("]")[0]
+            message = message.split(f"[{scope}]", 1)[1]
 
             return {
                 "message": message,
