@@ -233,7 +233,7 @@ class DHCPIpAssignedEventMatcher(EventMatcher):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
         super().__init__(
             hass, entry,
-            [3],
+            [3, 5],
             "dhcp_ip_assigned"
         )
 
@@ -262,7 +262,7 @@ class SyslogTracker:
         ]
         self.tracking_dict = {}
         self.client = client
-        self.first_poll = True
+        self.first_poll = entry.data.get("enable_syslog_poll_event", False)
         self.last_log = None
         self.source_ip = client.host.replace("http://", "").replace("https://", "")
 
@@ -284,7 +284,7 @@ class SyslogTracker:
         for matcher in self.matchers:
             process_ok = await matcher.process(event_data)
             if process_ok:
-                break
+                return
 
     async def poll(self):
         json = await self.client.get_syslog(50)
@@ -333,7 +333,7 @@ class SyslogTracker:
 
     @staticmethod
     def get_event_data(event) -> dict:
-        message = event.data.get("message")
+        message = event.data.get("message").replace("  ", " ")
         if message.startswith("<"):
             timestamp = message[3:22]
             scope = message[23:].split("]")[0]
