@@ -24,12 +24,12 @@ Home Assistant Integration for TP-Link Enterprise Router
 系统日志更新速度小于1秒，实测准确度99.9%（取决于内网网络稳定性），算法校准后能保证当前连接ap的准确性，不保证漫游过程准确性
 系统日志事件功能用了 homeassistant-syslog-receiver, 但是要改一些代码，后面我会给作者提交PR
 
-- [ ] tplink_enterprise_router_wireless_web_login: 每次登陆后台管理页面的时候发送
+- [x] tplink_enterprise_router_web_login: 每次登陆后台管理页面的时候发送
 - [x] tplink_enterprise_router_wireless_client_roamed: 客户端漫游到其他AP设备时发送
 - [x] tplink_enterprise_router_wireless_client_connected: 客户端连接到AP时发送
 - [x] tplink_enterprise_router_wireless_client_disconnected: 客户端断开连接时发送
 - [x] tplink_enterprise_router_wireless_client_changed: 当客户端，断开、连接、漫游、频段切换时发送，仅检测系统日志
-- [ ] tplink_enterprise_router_dhcp_ip_assigned: 当路由器给客户端分配IP时发送
+- [x] tplink_enterprise_router_dhcp_ip_assigned: 当路由器给客户端分配IP时发送
 - [ ] tplink_enterprise_router_unstable_wireless_client_detected: 当客户端短时间内频繁连接和断线时发送
 
 ### 开关 / 按钮

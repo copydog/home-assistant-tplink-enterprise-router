@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from datetime import timedelta, datetime
 from urllib.parse import unquote
-
+from homeassistant.components import network
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
@@ -90,8 +90,6 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
             return
 
         self.force_update = False
-
-        start_time = datetime.now()
 
         """ Pull status """
         data = await self.client.get_status()

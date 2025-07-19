@@ -166,6 +166,7 @@ class TPLinkEnterpriseRouterClient:
         """ Calculate hosts """
         hosts = json['host_management']['host_info']
         clean_hosts = [list(item.values())[0] for item in hosts]
+        local_ip = next((host['ip'] for host in clean_hosts if host['is_cur_host']), None)
         clean_hosts = [
             {key: unquote(item.get(key, ''))
              for key in
@@ -253,6 +254,7 @@ class TPLinkEnterpriseRouterClient:
             "ap_offline_count": ap_offline_count,
             "ap_offline_list": ap_offline_list,
             "ssid_list": ssid_list,
+            "local_ip": local_ip
         }
 
     async def request(self, url, payload):
