@@ -3,11 +3,9 @@ import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import IntegrationError
 
 from .const import (DOMAIN, PLATFORMS)
 from .coordinator import TPLinkEnterpriseRouterCoordinator
-from .syslog import SyslogHandler
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -27,12 +25,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     )
 
-    remove_listener = hass.bus.async_listen(
-        "syslog_receiver_message",
-        SyslogHandler(hass, entry).handle,
-    )
+    """ Syslog event handler """
+    if entry.data.get("enable_syslog_event", False):
+        remove_listener = hass.bus.async_listen(
+            entry.data.get("syslog_event", "syslog_receiver_message"), _coordinator.syslog_tracker.handle,
+        )
 
-    entry.async_on_unload(remove_listener)
+        entry.async_on_unload(remove_listener)
 
     return True
 

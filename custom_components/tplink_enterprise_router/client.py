@@ -88,6 +88,21 @@ class TPLinkEnterpriseRouterClient:
             self.token = None
             await self.set_ssid(serv_id, para)
 
+    async def get_syslog(self, count: int):
+        if self.token is None:
+            await self.authenticate()
+
+        json = await self.request(
+            f"{self.host}/stok={self.token}/ds",
+            {"method":"do","system":{"read_logs":{"page":"1","num_per_page":str(count)}}}
+        )
+
+        if json.get("error_code") == -40401:
+            self.token = None
+            await self.get_syslog(count)
+
+        return json
+
     async def get_status(self):
         if self.token is None:
             await self.authenticate()

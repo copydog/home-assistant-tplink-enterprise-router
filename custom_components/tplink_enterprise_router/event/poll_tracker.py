@@ -3,7 +3,7 @@ import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import translation
 
-from .const import (DOMAIN)
+from custom_components.tplink_enterprise_router.const import (DOMAIN)
 
 _LOGGER = logging.getLogger(__name__)
 

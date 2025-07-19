@@ -33,6 +33,7 @@ class TPLinkEnterpriseRouterOptionsFlowHandler(config_entries.OptionsFlow):
             vol.Required("update_interval", default=data.get("update_interval", 30)): int,
             vol.Required("enable_syslog_event", default=data.get("enable_syslog_event", False)): bool,
             vol.Required("enable_poll_event", default=False): bool,
+            vol.Required("debug", default=False): bool,
         }
 
         return self.async_show_form(step_id="init", data_schema=vol.Schema(scheme))
