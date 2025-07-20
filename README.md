@@ -9,6 +9,7 @@ Home Assistant Integration for TP-Link Enterprise Router
 <img src="https://raw.githubusercontent.com/copydog/home-assistant-tplink-enterprise-router/refs/heads/main/docs/media/screenshot.png">
 
 ## 你需要知道的系统设计
+- 登陆密码是加密后的密码，自行抓包
 - web_login事件是排除了此插件的登陆
 - 为保证轮询性能，除非令牌失效，每次调用接口，不再重新登陆
 - 为保证本项目最小化，系统日志通知事件会基于homeassistant-syslog-receiver转发事件，有轻微的延迟
