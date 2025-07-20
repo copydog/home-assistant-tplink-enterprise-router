@@ -15,10 +15,6 @@ class TPLinkEnterpriseRouterOptionsFlowHandler(config_entries.OptionsFlow):
         data = self._config_entry.options or self._config_entry.data
 
         if user_input is not None:
-            if user_input.get("enable_syslog_notify_event"):
-                self._init_data = user_input
-                return await self.async_step_syslog_config()
-
             self.hass.config_entries.async_update_entry(
                 self._config_entry,
                 data={**data, **user_input},
@@ -40,34 +36,9 @@ class TPLinkEnterpriseRouterOptionsFlowHandler(config_entries.OptionsFlow):
             vol.Required("unique_id", default=data.get("unique_id", "")): str,
             vol.Required("enable_syslog_notify_event", default=data.get("enable_syslog_notify_event", False)): bool,
             vol.Required("enable_syslog_poll_event", default=data.get("enable_syslog_poll_event", False)): bool,
+            vol.Required("syslog_event", default=data.get("syslog_event", "syslog_receiver_message")): str,
+            vol.Required("enable_dedicated_event", default=data.get("enable_dedicated_event", False)): bool,
+            vol.Required("enable_universal_event", default=data.get("enable_universal_event", False)): bool,
         }
 
         return self.async_show_form(step_id="init", data_schema=vol.Schema(scheme))
-
-    async def async_step_syslog_config(self, user_input=None):
-        data = self._config_entry.options or self._config_entry.data
-        errors = {}
-
-        if user_input is not None:
-            merged_data = {**self._init_data, **user_input}
-            self.hass.config_entries.async_update_entry(
-                self._config_entry,
-                data=merged_data,
-                options=merged_data,
-            )
-
-            await self.hass.config_entries.async_reload(self._config_entry.entry_id)
-
-            return self.async_create_entry(
-                title=data["instance_name"], data=merged_data
-            )
-
-        return self.async_show_form(
-            step_id="syslog_config",
-            data_schema=vol.Schema({
-                vol.Required("syslog_event", default=data.get("syslog_event", "syslog_receiver_message")): str,
-                vol.Required("enable_dedicated_event", default=data.get("enable_dedicated_event", False)): bool,
-                vol.Required("enable_universal_event", default=data.get("enable_universal_event", False)): bool,
-            }),
-            errors=errors,
-        )

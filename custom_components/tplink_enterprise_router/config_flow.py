@@ -36,6 +36,9 @@ class TPLinkEnterpriseRouterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN)
                 vol.Optional("unique_id", default="default"): str,
                 vol.Required("enable_syslog_notify_event", default=False): bool,
                 vol.Required("enable_syslog_poll_event", default=False): bool,
+                vol.Required("syslog_event", default="syslog_receiver_message"): str,
+                vol.Required("enable_dedicated_event", default=False): bool,
+                vol.Required("enable_universal_event", default=True): bool,
             }),
             errors=errors
         )

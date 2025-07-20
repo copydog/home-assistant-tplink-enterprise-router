@@ -12,7 +12,9 @@
           "update_interval": "Update Interval",
           "enable_syslog_notify_event": "Enable Syslog Notify Event",
           "enable_syslog_poll_event": "Enable Syslog Poll Event",
-          "unique_id": "Unique ID "
+          "unique_id": "Unique ID",
+          "enable_universal_event": "Fire Universal Event",
+          "enable_dedicated_event": "Fire Dedicated Event"
         }
       }
     }
@@ -29,7 +31,9 @@
           "update_interval": "Update Interval",
           "enable_syslog_notify_event": "Enable Syslog Notify Event",
           "enable_syslog_poll_event": "Enable Syslog Poll Event",
-          "unique_id": "Unique ID "
+          "unique_id": "Unique ID ",
+          "enable_universal_event": "Fire Universal Event",
+          "enable_dedicated_event": "Fire Dedicated Event"
         }
       },
       "syslog_config": {
