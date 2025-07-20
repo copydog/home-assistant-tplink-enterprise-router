@@ -31,7 +31,7 @@ Home Assistant Integration for TP-Link Enterprise Router
 - [x] tplink_enterprise_router_wireless_client_disconnected: 客户端断开连接时发送
 - [x] tplink_enterprise_router_wireless_client_changed: 当客户端，断开、连接、漫游、频段切换时发送，仅检测系统日志
 - [x] tplink_enterprise_router_dhcp_ip_assigned: 当路由器给客户端分配IP时发送
-- [ ] tplink_enterprise_router_unstable_wireless_client_detected: 当客户端短时间内频繁连接和断线时发送
+- [x] tplink_enterprise_router_unstable_wireless_client_detected: 当客户端短时间内频繁连接和断线时发送
 
 ### 开关 / 按钮
 - [x] 重启路由 / 重启AP / 重启AP和路由
@@ -46,6 +46,7 @@ Home Assistant Integration for TP-Link Enterprise Router
 - [x] WAN 总数 / 状态
 - [x] SSID 设备统计 / 列表
 - [x] AP 总数 / 在线总数 / 离线总数 / 列表
+- [ ] 所有客户端实体
 
 ## <a id="supports">支持的路由器</a>
 - TL-R479GPE-AC (我用这个)

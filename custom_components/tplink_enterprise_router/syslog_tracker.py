@@ -1,6 +1,6 @@
 import logging
 from urllib.parse import unquote
-
+from datetime import datetime, timedelta
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Event, HomeAssistant
 from homeassistant.helpers import translation
@@ -260,11 +260,14 @@ class SyslogTracker:
             WirelessClientConnectedEventMatcher(hass, entry),
             WirelessClientDisconnectedEventMatcher(hass, entry),
         ]
+        self.hass = hass
+        self.entry = entry
         self.tracking_dict = {}
         self.client = client
         self.first_poll = entry.data.get("enable_syslog_poll_event", False)
         self.last_log = None
         self.source_ip = client.host.replace("http://", "").replace("https://", "")
+        self.unstable_tracking_list = []
 
     async def handle(self, event):
         event_data = SyslogTracker.get_event_data(event)
@@ -284,6 +287,36 @@ class SyslogTracker:
         for matcher in self.matchers:
             process_ok = await matcher.process(event_data)
             if process_ok:
+                """ Check unstable log """
+                if isinstance(matcher, WirelessClientDisconnectedEventMatcher):
+                    # remove expired tracking dataw
+                    check_count = self.entry.data.get("unstable_check_count", 5)
+                    check_time = self.entry.data.get("unstable_check_time", 60)
+                    now = datetime.now()
+                    expired_time = (now - timedelta(seconds=check_time)).strftime("%Y-%m-%d %H:%M:%S")
+                    self.unstable_tracking_list = [
+                        item for item in self.unstable_tracking_list if item['timestamp'] >= expired_time
+                    ]
+
+                    # check
+                    key = SyslogTracker.get_track_key(event_data)
+                    self.unstable_tracking_list.append({
+                        "key": key,
+                        "timestamp": event_data['timestamp'],
+                    })
+                    count = sum([1 for item in self.unstable_tracking_list if item['key'] == key])
+
+                    if count >= check_count:
+                        segments = event_data['message'].split(" ")
+                        final_data = {
+                            "source_ip": event_data['source_ip'],
+                            "timestamp": event_data['timestamp'],
+                            "client_mac": segments[1][:17],
+                            "type": "unstable_wireless_client_detected",
+                        }
+                        self.hass.bus.async_fire(f"{DOMAIN}_unstable_wireless_client_detected", final_data)
+                        self.hass.bus.async_fire(f"{DOMAIN}_syslog", final_data)
+
                 return
 
     async def poll(self):

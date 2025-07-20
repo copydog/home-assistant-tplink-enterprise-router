@@ -15,7 +15,10 @@
           "enable_syslog_poll_event": "启用日志轮询事件",
           "unique_id": "Unique ID (多个路由请勿重复)",
           "enable_universal_event": "使用合并事件",
-          "enable_dedicated_event": "使用独立事件"
+          "enable_dedicated_event": "使用独立事件",
+          "enable_host_entity": "创建客户端实体",
+          "unstable_check_count": "不稳定客户端检测次数",
+          "unstable_check_time": "不稳定客户端检测时间"
         }
       }
     }
@@ -35,7 +38,10 @@
           "enable_syslog_poll_event": "启用日志轮询事件",
           "unique_id": "Unique ID (多个路由请勿重复)",
           "enable_universal_event": "使用合并事件",
-          "enable_dedicated_event": "使用独立事件"
+          "enable_dedicated_event": "使用独立事件",
+          "enable_host_entity": "创建客户端实体",
+          "unstable_check_count": "不稳定客户端检测次数",
+          "unstable_check_time": "不稳定客户端检测时间"
         }
       }
     }

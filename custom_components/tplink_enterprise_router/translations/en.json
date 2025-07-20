@@ -14,7 +14,10 @@
           "enable_syslog_poll_event": "Enable Syslog Poll Event",
           "unique_id": "Unique ID",
           "enable_universal_event": "Fire Universal Event",
-          "enable_dedicated_event": "Fire Dedicated Event"
+          "enable_dedicated_event": "Fire Dedicated Event",
+          "enable_host_entity": "Create Host Entities",
+          "unstable_check_count": "Unstable Client Check Count",
+          "unstable_check_time": "Unstable Client Check Time"
         }
       }
     }
@@ -33,7 +36,10 @@
           "enable_syslog_poll_event": "Enable Syslog Poll Event",
           "unique_id": "Unique ID ",
           "enable_universal_event": "Fire Universal Event",
-          "enable_dedicated_event": "Fire Dedicated Event"
+          "enable_dedicated_event": "Fire Dedicated Event",
+          "enable_host_entity": "Create Host Entities",
+          "unstable_check_count": "Unstable Client Check Count",
+          "unstable_check_time": "Unstable Client Check Time"
         }
       },
       "syslog_config": {
