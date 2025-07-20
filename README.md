@@ -15,9 +15,9 @@ Home Assistant Integration for TP-Link Enterprise Router
 - 如遇见极小丢包、乱序风险导致的状态错误，可开启同时开始"系统日志轮询事件"与"系统日志通知事件"
 - 可以同时开启"系统日志轮询事件"与"系统日志通知事件" 不会出现重复事件的情况
 - 搭配开源项目eventsensor，会事半功倍
+- 不支持Yaml配置，但支持指定unique_id
 
 ## 开发路线
-- [ ] 支持Yaml配置
 - [ ] TP-Link交换机: TL-SG2024MP 8.0 (新开项目)
 
 ## 组件

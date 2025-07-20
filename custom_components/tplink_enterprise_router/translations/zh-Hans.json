@@ -12,7 +12,8 @@
           "update_interval": "更新间隔",
           "syslog_event": "Syslog事件",
           "enable_syslog_notify_event": "启用日志通知事件",
-          "enable_syslog_poll_event": "启用日志轮询事件"
+          "enable_syslog_poll_event": "启用日志轮询事件",
+          "unique_id": "Unique ID (多个路由请勿重复)"
         }
       }
     }
@@ -29,7 +30,8 @@
           "update_interval": "更新间隔",
           "syslog_event": "Syslog事件",
           "enable_syslog_notify_event": "启用日志通知事件",
-          "enable_syslog_poll_event": "启用日志轮询事件"
+          "enable_syslog_poll_event": "启用日志轮询事件",
+          "unique_id": "Unique ID (多个路由请勿重复)"
         }
       }
     }

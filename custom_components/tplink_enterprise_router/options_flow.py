@@ -37,6 +37,7 @@ class TPLinkEnterpriseRouterOptionsFlowHandler(config_entries.OptionsFlow):
             vol.Required("username", default=data.get("username", "")): str,
             vol.Required("password", default=data.get("password", "")): str,
             vol.Required("update_interval", default=data.get("update_interval", 30)): int,
+            vol.Required("unique_id", default=data.get("unique_id", "")): str,
             vol.Required("enable_syslog_notify_event", default=data.get("enable_syslog_notify_event", False)): bool,
             vol.Required("enable_syslog_poll_event", default=data.get("enable_syslog_poll_event", False)): bool,
         }

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import logging
-from datetime import timedelta, datetime
+from datetime import timedelta
 from urllib.parse import unquote
-from homeassistant.components import network
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
@@ -28,11 +28,12 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
         username = entry.data.get('username')
         password = entry.data.get('password')
         update_interval = entry.data.get('update_interval', 30)
+        unique_id = entry.data.get('unique_id', entry.entry_id)
         self.status = {
             "polling": True,
         }
         self.device_info = None
-        self.unique_id = entry.entry_id
+        self.unique_id = unique_id
         self.force_update = False
 
         self.entry = entry

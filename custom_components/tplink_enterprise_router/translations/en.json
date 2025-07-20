@@ -11,7 +11,8 @@
           "password": "Password",
           "update_interval": "Update Interval",
           "enable_syslog_notify_event": "Enable Syslog Notify Event",
-          "enable_syslog_poll_event": "Enable Syslog Poll Event"
+          "enable_syslog_poll_event": "Enable Syslog Poll Event",
+          "unique_id": "Unique ID "
         }
       }
     }
@@ -27,7 +28,8 @@
           "password": "Password",
           "update_interval": "Update Interval",
           "enable_syslog_notify_event": "Enable Syslog Notify Event",
-          "enable_syslog_poll_event": "Enable Syslog Poll Event"
+          "enable_syslog_poll_event": "Enable Syslog Poll Event",
+          "unique_id": "Unique ID "
         }
       },
       "syslog_config": {
