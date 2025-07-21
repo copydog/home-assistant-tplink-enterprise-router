@@ -1,0 +1,8 @@
+{
+  "name": "TP-Link Enterprise Router",
+  "filename": "tplink_enterprise_router.zip",
+  "homeassistant": "2023.9.3",
+  "hide_default_branch": true,
+  "render_readme": true,
+  "zip_release": true
+}

@@ -20,15 +20,21 @@ Home Assistant Integration for TP-Link Enterprise Router
 ## 版本
 - 近期发布v1.0.0到hacs
 
+## 维护计划
+- 长期维护，仅做兼容性、修复性、或简单功能更新
+- 开关 / 按钮 等操作类功能更新 欢迎随时PR
+- 需要轮询或大量消耗性能的功能，issue协商 或 在UI界面添加开启选项后PR
+- BUG / 设计缺陷 / 代码优化 / 架构优化，可以直接PR也可以issue提出
+
 ## 组件
 ### 事件
-系统日志事件功能用了 homeassistant-syslog-receiver, 但是要改一些代码，后面我会给作者提交PR
+系统日志通知事件功能用了 homeassistant-syslog-receiver, 但是要改一些代码，后面我会给作者提交PR
 
 - [x] tplink_enterprise_router_web_login: 每次登陆后台管理页面的时候发送
 - [x] tplink_enterprise_router_wireless_client_roamed: 客户端漫游到其他AP设备时发送
 - [x] tplink_enterprise_router_wireless_client_connected: 客户端连接到AP时发送
 - [x] tplink_enterprise_router_wireless_client_disconnected: 客户端断开连接时发送
-- [x] tplink_enterprise_router_wireless_client_changed: 当客户端，断开、连接、漫游、频段切换时发送，仅检测系统日志
+- [x] tplink_enterprise_router_wireless_client_changed: 当客户端，断开、连接、漫游、频段切换时发送
 - [x] tplink_enterprise_router_dhcp_ip_assigned: 当路由器给客户端分配IP时发送
 - [x] tplink_enterprise_router_unstable_wireless_client_detected: 当客户端短时间内频繁连接和断线时发送
 
@@ -52,3 +58,9 @@ Home Assistant Integration for TP-Link Enterprise Router
 - TL-R470GP-AC
 - TL-R6812TP-AC (测试中)
 - 其他类似设备
+
+## 最佳实践
+### 设备漫游/连接/断开触发联动
+- 如果对实时性不敏感，可用客户端实体去做自动化
+- 如果需要实时性，可用系统日志通知模式的事件加上eventsensor，自行定义一个追踪sensor，延迟低于1秒
+
