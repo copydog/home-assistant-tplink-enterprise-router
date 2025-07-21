@@ -6,7 +6,10 @@ Home Assistant Integration for TP-Link Enterprise Router
 
 查看 [支持的路由](#supports)
 
-<img src="https://raw.githubusercontent.com/copydog/home-assistant-tplink-enterprise-router/refs/heads/main/docs/media/screenshot.png">
+<img src="https://raw.githubusercontent.com/copydog/home-assistant-tplink-enterprise-router/refs/heads/main/docs/media/screenshot_cn_1.png" width="25%">
+<img src="https://raw.githubusercontent.com/copydog/home-assistant-tplink-enterprise-router/refs/heads/main/docs/media/screenshot_cn_2.png" width="25%">
+<img src="https://raw.githubusercontent.com/copydog/home-assistant-tplink-enterprise-router/refs/heads/main/docs/media/screenshot_cn_3.png" width="25%">
+<img src="https://raw.githubusercontent.com/copydog/home-assistant-tplink-enterprise-router/refs/heads/main/docs/media/screenshot_cn_4.png" width="25%">
 
 ## 你需要知道的系统设计
 - 登陆密码是加密后的密码，自行抓包
