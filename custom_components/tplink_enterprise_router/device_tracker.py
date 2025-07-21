@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 from homeassistant.components.device_tracker import ScannerEntity, SourceType
+from homeassistant.components.device_tracker.config_entry import BaseTrackerEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import translation
@@ -76,7 +77,7 @@ class DeviceTracker:
             entity = TPLinkTracker(mac, self.coordinator)
             entities.append(entity)
             self.tracked[mac] = entity
-        self.async_add_entities(entities)
+        self.async_add_entities(entities, False)
 
     async def update_hosts(self, host_dict: dict) -> None:
         new_mac_list = list(host_dict.keys())
@@ -91,7 +92,7 @@ class DeviceTracker:
         for mac in added:
             entity = TPLinkTracker(mac, self.coordinator)
             entities.append(entity)
-        self.async_add_entities(entities)
+        self.async_add_entities(entities, False)
 
     async def _get_tracked_mac_list(self) -> list:
         data = await self._async_load_data()
@@ -110,7 +111,7 @@ class DeviceTracker:
         await self.store.async_save(data)
 
 
-class TPLinkTracker(CoordinatorEntity, ScannerEntity):
+class TPLinkTracker(CoordinatorEntity, BaseTrackerEntity):
     """Representation of network device."""
 
     def __init__(
@@ -124,7 +125,7 @@ class TPLinkTracker(CoordinatorEntity, ScannerEntity):
         mac_key = mac.replace("-", "_")
         entry_key = coordinator.entry.entry_id
         self._attr_device_info = coordinator.device_info
-        _LOGGER.error(self._attr_device_info)
+        _LOGGER.error(self.device_info)
         self._attr_unique_id = f"{DOMAIN}_host_{mac_key}_{entry_key}"
         self.entity_id = f"device_tracker.{DOMAIN}_host_{mac_key}_{entry_key}"
 
