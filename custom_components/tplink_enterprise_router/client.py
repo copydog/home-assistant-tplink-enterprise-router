@@ -123,9 +123,9 @@ class TPLinkEnterpriseRouterClient:
                     ]
                 },
                 "online_check": {"table": "state", "name": "state"},
-                "apmng_status": {
-                    "name": "apmng_status"
-                },
+                # "apmng_status": {
+                #     "name": "apmng_status"
+                # },
                 "apmng_set": {
                     "table": "ap_list",
                     "filter": [
@@ -235,6 +235,7 @@ class TPLinkEnterpriseRouterClient:
 
         return {
             "hosts": clean_hosts,
+            "hosts_dict": {str(item["mac"]): item for item in clean_hosts},
             "wireless_hosts": wireless_hosts,
             "wired_hosts": wired_hosts,
             "ap_connected_hosts": ap_connected_hosts,

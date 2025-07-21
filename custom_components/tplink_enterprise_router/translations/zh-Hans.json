@@ -52,6 +52,9 @@
         "wireless_client_disconnected": "{client_mac} 断开连接",
         "wireless_client_connected": "{client_mac} 成功连接 {ap_name} 的 {ap_ssid}({ap_frequency})",
         "wireless_client_roamed": "{client_mac} 从 {previous_ap_name} 的 {previous_ap_ssid}({previous_ap_frequency}) 漫游到 {current_ap_name} 的 {current_ap_ssid}({current_ap_frequency}) "
+      },
+      "entity": {
+        "disconnected": "离线"
       }
     }
   },

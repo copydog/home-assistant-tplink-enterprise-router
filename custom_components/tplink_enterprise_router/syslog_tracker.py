@@ -19,8 +19,6 @@ class EventMatcher:
         self.type = _type
         self.translations = None
 
-        pass
-
     async def process(self, event: dict) -> bool:
         if self.translations is None:
             self.translations = await translation.async_get_translations(

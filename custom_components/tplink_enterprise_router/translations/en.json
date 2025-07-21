@@ -56,6 +56,9 @@
         "wireless_client_disconnected": "{client_mac} disconnected",
         "wireless_client_connected": "{client_mac} connected to {ap_name} {ap_ssid} ({ap_frequency})",
         "wireless_client_roamed": "{client_mac} roamed {previous_ap_name} {previous_ap_ssid}({previous_ap_frequency}) to {current_ap_name} {current_ap_ssid}({current_ap_frequency}) "
+      },
+      "entity": {
+        "disconnected": "disconnected"
       }
     }
   },
