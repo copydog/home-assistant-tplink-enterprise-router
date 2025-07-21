@@ -170,11 +170,6 @@ class TPLinkTracker(CoordinatorEntity, BaseTrackerEntity):
         return self.device.get("ip")
 
     @property
-    def unique_id(self) -> str:
-        """Return an unique identifier for this device."""
-        return f"{DOMAIN}_host_{self.mac_address}_{self.coordinator.unique_id}"
-
-    @property
     def icon(self) -> str:
         """Return device icon."""
         return "mdi:lan-connect" if self.is_connected else "mdi:lan-disconnect"
