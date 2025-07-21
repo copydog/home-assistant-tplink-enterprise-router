@@ -21,6 +21,9 @@ async def async_setup_entry(
         entry: ConfigEntry,
         async_add_entities: AddEntitiesCallback,
 ) -> None:
+    if not entry.data.get("enable_host_entity", False):
+        return
+
     coordinator: TPLinkEnterpriseRouterCoordinator = hass.data[DOMAIN][entry.entry_id]
     tracker = DeviceTracker(hass, entry, coordinator, async_add_entities)
 
