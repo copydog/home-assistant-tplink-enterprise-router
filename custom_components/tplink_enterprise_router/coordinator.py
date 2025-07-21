@@ -105,22 +105,23 @@ class TPLinkEnterpriseRouterCoordinator(DataUpdateCoordinator):
         self.set_status(data)
 
         """ Build DeviceInfo """
-        if data['device_info'].get('model'):
-            self.router_name = f"TP-Link {data['device_info']['model']} ({self.host})"
+        if self.device_info is None:
+            if data['device_info'].get('model'):
+                self.router_name = f"TP-Link {data['device_info']['model']} ({self.host})"
 
-        if data['device_info'].get('firmware_version'):
-            self.firmware_version = unquote(data['device_info']['firmware_version'])
+            if data['device_info'].get('firmware_version'):
+                self.firmware_version = unquote(data['device_info']['firmware_version'])
 
-        self.device_info = DeviceInfo(
-            configuration_url=self.host,
-            connections={(CONNECTION_NETWORK_MAC, data['device_info']['mac'])},
-            identifiers={(DOMAIN, data['device_info']['mac'])},
-            manufacturer="TP-Link",
-            model=data['device_info']['model'],
-            name=self.router_name,
-            sw_version=self.firmware_version,
-            hw_version=data['device_info']['hardware_version'],
-        )
+            self.device_info = DeviceInfo(
+                configuration_url=self.host,
+                connections={(CONNECTION_NETWORK_MAC, data['device_info']['mac'])},
+                identifiers={(DOMAIN, data['device_info']['mac'])},
+                manufacturer="TP-Link",
+                model=data['device_info']['model'],
+                name=self.router_name,
+                sw_version=self.firmware_version,
+                hw_version=data['device_info']['hardware_version'],
+            )
 
         """ SyslogTracker poll """
         if self.entry.data.get("enable_syslog_poll_event", False):
