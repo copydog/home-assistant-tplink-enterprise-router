@@ -14,12 +14,11 @@ Home Assistant Integration for TP-Link Enterprise Router
 - 为保证轮询性能，除非令牌失效，每次调用接口，不再重新登陆
 - 为保证本项目最小化，系统日志通知事件会基于homeassistant-syslog-receiver转发事件，有轻微的延迟
 - 如遇见极小丢包、乱序风险导致的状态错误，可开启同时开始"系统日志轮询事件"与"系统日志通知事件"
-- 可以同时开启"系统日志轮询事件"与"系统日志通知事件" 不会出现重复事件的情况
-- 搭配开源项目eventsensor，会事半功倍
+- 客户端实体状态目前只会在轮询的时候更新，如需要实时追踪，使用事件+eventsensor
 - 不支持Yaml配置，但支持指定unique_id
 
-## 开发路线
-- [ ] TP-Link交换机: TL-SG2024MP 8.0 (新开项目)
+## 版本
+- 近期发布v1.0.0到hacs
 
 ## 组件
 ### 事件
