@@ -128,7 +128,6 @@ class TPLinkTracker(CoordinatorEntity, BaseTrackerEntity):
         mac_key = mac.replace("-", "_")
         entry_key = coordinator.entry.entry_id
         self._attr_device_info = coordinator.device_info
-        _LOGGER.error(self.device_info)
         self._attr_unique_id = f"{DOMAIN}_host_{mac_key}_{entry_key}"
         self.entity_id = f"device_tracker.{DOMAIN}_host_{mac_key}_{entry_key}"
 
