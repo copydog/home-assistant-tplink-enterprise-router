@@ -44,7 +44,8 @@ async def async_setup_entry(
 
 
 class DeviceTracker:
-    disconnect_text = "disconnected"
+    disconnected_text = "disconnected"
+    connected_text = "connected"
 
     def __init__(self,
                  hass: HomeAssistant,
@@ -70,8 +71,11 @@ class DeviceTracker:
             "component",
             [DOMAIN],
         )
-        DeviceTracker.disconnect_text = translations.get(
+        DeviceTracker.disconnected_text = translations.get(
             "component.tplink_enterprise_router.component.tplink_enterprise_router.entity.disconnected"
+        )
+        DeviceTracker.connected_text = translations.get(
+            "component.tplink_enterprise_router.component.tplink_enterprise_router.entity.connected"
         )
 
     async def create_old_hosts(self):
@@ -125,11 +129,10 @@ class TPLinkTracker(CoordinatorEntity, BaseTrackerEntity):
         """Initialize the tracked device."""
         self.mac = mac
         self.device = coordinator.status['hosts_dict'].get(mac, {})
-        mac_key = mac.replace("-", "_")
         entry_key = coordinator.entry.entry_id
         self._attr_device_info = coordinator.device_info
-        self._attr_unique_id = f"{DOMAIN}_host_{mac_key}_{entry_key}"
-        self.entity_id = f"device_tracker.{DOMAIN}_host_{mac_key}_{entry_key}"
+        self._attr_unique_id = f"{DOMAIN}_host_{mac}_{entry_key}"
+        self.entity_id = f"device_tracker.{DOMAIN}_host_{mac}_{entry_key}"
 
         super().__init__(coordinator)
 
@@ -137,6 +140,10 @@ class TPLinkTracker(CoordinatorEntity, BaseTrackerEntity):
     def is_connected(self) -> bool:
         """Return true if the client is connected to the network."""
         return self.device.get("mac") is not None
+
+    @property
+    def is_wired(self) -> bool:
+        return self.device.get("type") == "wired"
 
     @property
     def source_type(self) -> str:
@@ -162,7 +169,10 @@ class TPLinkTracker(CoordinatorEntity, BaseTrackerEntity):
 
     @property
     def state(self) -> str:
-        return self.device.get("ap_name", DeviceTracker.disconnect_text)
+        if self.is_wired:
+            return DeviceTracker.connected_text if self.is_connected else DeviceTracker.disconnected_text
+
+        return self.device.get("ap_name", DeviceTracker.disconnected_text)
 
     @property
     def ip_address(self) -> str:
@@ -171,8 +181,11 @@ class TPLinkTracker(CoordinatorEntity, BaseTrackerEntity):
 
     @property
     def icon(self) -> str:
+        if self.is_wired:
+            return "mdi:lan-connect" if self.is_connected else "mdi:lan-disconnect"
+
         """Return device icon."""
-        return "mdi:lan-connect" if self.is_connected else "mdi:lan-disconnect"
+        return "mdi:access-point-network" if self.is_connected else "mdi:access-point-network-off"
 
     @property
     def extra_state_attributes(self) -> dict[str, str]:

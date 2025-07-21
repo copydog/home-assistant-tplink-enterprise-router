@@ -46,7 +46,7 @@ Home Assistant Integration for TP-Link Enterprise Router
 - [x] WAN 总数 / 状态
 - [x] SSID 设备统计 / 列表
 - [x] AP 总数 / 在线总数 / 离线总数 / 列表
-- [ ] 所有客户端实体
+- [x] 客户端实体
 
 ## <a id="supports">支持的路由器</a>
 - TL-R479GPE-AC (我用这个)
